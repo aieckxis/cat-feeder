@@ -36,6 +36,20 @@
       </div>
     </header>
 
+    <!-- Next Routine Countdown Banner -->
+    <section class="bg-[#EEF4F8] border border-[#D5E3EC] p-3.5 rounded-3xl shadow-sm flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <span class="text-base">⏰</span>
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Upcoming Meal</span>
+          <p id="nextMealDisplay" class="text-xs font-bold text-[#3D405B]">Calculating next schedule...</p>
+        </div>
+      </div>
+      <span id="countdownBadge" class="text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs">
+        --
+      </span>
+    </section>
+
     <!-- Audio & Alert Preferences Card -->
     <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm flex items-center justify-between">
       <div>
@@ -175,16 +189,22 @@
       </form>
     </section>
 
-    <!-- Activity Log -->
+    <!-- Activity Log with Clear History Button -->
     <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-2.5">
       <div class="flex justify-between items-center">
-        <h3 class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Activity History</h3>
-        <div class="flex items-center space-x-1">
+        <div class="flex items-center space-x-1.5">
+          <h3 class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Activity History</h3>
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span class="text-[10px] font-semibold text-stone-400">Firebase Cloud</span>
         </div>
+        <button 
+          id="clearLogsBtn"
+          type="button"
+          class="text-[10px] font-bold text-stone-400 hover:text-rose-500 transition cursor-pointer"
+        >
+          Clear History
+        </button>
       </div>
-      <ul id="logList" class="space-y-1.5 text-xs text-stone-600"></ul>
+      <ul id="logList" class="space-y-1.5 text-xs text-stone-600 max-h-48 overflow-y-auto pr-1"></ul>
     </section>
 
   </main>
@@ -212,16 +232,20 @@
     const feedCountDisplay = document.getElementById('feedCountDisplay');
     const scheduleForm = document.getElementById('scheduleForm');
     const logList = document.getElementById('logList');
+    const clearLogsBtn = document.getElementById('clearLogsBtn');
+    const nextMealDisplay = document.getElementById('nextMealDisplay');
+    const countdownBadge = document.getElementById('countdownBadge');
 
     let isInitialLoad = true;
+    let currentSchedules = null;
 
-    // ── Web Audio API: Gentle Chime Synthesizer ─────────────────
+    // ── Web Audio API Synthesizer ─────────────────────────────────
     function playGentleChime() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         const ctx = new AudioCtx();
         const now = ctx.currentTime;
-        const frequencies = [587.33, 880, 1174.66]; // D5, A5, D6 triad chord
+        const frequencies = [587.33, 880, 1174.66];
 
         frequencies.forEach((freq, index) => {
           const osc = ctx.createOscillator();
@@ -245,10 +269,8 @@
       }
     }
 
-    // ── Browser Push Notification Trigger ───────────────────────
     function triggerNotification(title, message) {
       playGentleChime();
-
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(title, {
           body: message,
@@ -257,9 +279,8 @@
       }
     }
 
-    // Enable Sound & Notifications
     enableNotifBtn.addEventListener('click', () => {
-      playGentleChime(); // Subukan agad ang sound
+      playGentleChime();
       if ('Notification' in window) {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
@@ -278,7 +299,66 @@
       logList.prepend(li);
     }
 
-    // ── 1. Firebase Real-time Listeners ──────────────────────────
+    // Clear History Button Action
+    clearLogsBtn.addEventListener('click', () => {
+      logList.innerHTML = '';
+      addLog('Activity history cleared');
+    });
+
+    // ── Next Meal Countdown Calculator ────────────────────────────
+    function updateNextMealCountdown() {
+      if (!currentSchedules) return;
+
+      const now = new Date();
+      const slots = [
+        { name: 'Breakfast', ...currentSchedules.slot_1 },
+        { name: 'Lunch', ...currentSchedules.slot_2 },
+        { name: 'Dinner', ...currentSchedules.slot_3 }
+      ].filter(s => s && s.enabled && s.time);
+
+      if (slots.length === 0) {
+        nextMealDisplay.textContent = 'No routines enabled';
+        countdownBadge.textContent = 'Off';
+        return;
+      }
+
+      let upcoming = null;
+      let minDiffMs = Infinity;
+
+      slots.forEach(slot => {
+        const [h, m] = slot.time.split(':').map(Number);
+        const mealDate = new Date();
+        mealDate.setHours(h, m, 0, 0);
+
+        let diff = mealDate.getTime() - now.getTime();
+        // Kung tapos na ngayong araw, ilipat bukas
+        if (diff <= 0) {
+          diff += 24 * 60 * 60 * 1000;
+        }
+
+        if (diff < minDiffMs) {
+          minDiffMs = diff;
+          upcoming = { ...slot, targetTime: slot.time };
+        }
+      });
+
+      if (upcoming) {
+        const totalMinutes = Math.round(minDiffMs / (1000 * 60));
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+
+        nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime})`;
+        if (hours > 0) {
+          countdownBadge.textContent = `in ${hours}h ${mins}m`;
+        } else {
+          countdownBadge.textContent = `in ${mins}m`;
+        }
+      }
+    }
+
+    setInterval(updateNextMealCountdown, 30000); // Re-calculate every 30s
+
+    // ── 1. Firebase Listeners ────────────────────────────────────
     db.ref('/logs/last_fed').on('value', (snap) => {
       const val = snap.val();
       if (val) {
@@ -299,6 +379,7 @@
     db.ref('/schedules').on('value', (snap) => {
       const data = snap.val();
       if (data) {
+        currentSchedules = data;
         if (data.slot_1) {
           document.getElementById('slot1Time').value = data.slot_1.time || "07:30";
           document.getElementById('slot1Portion').value = data.slot_1.portion || "25g";
@@ -314,28 +395,24 @@
           document.getElementById('slot3Portion').value = data.slot_3.portion || "25g";
           document.getElementById('slot3Active').checked = data.slot_3.enabled ?? true;
         }
+        updateNextMealCountdown();
       }
     });
 
-    // ── 2. Fixed Manual Feed Trigger ─────────────────────────────
+    // ── 2. Manual Feed Trigger ───────────────────────────────────
     manualBtn.addEventListener('click', () => {
       manualBtn.disabled = true;
       manualBtn.textContent = 'Dispensing Snack...';
 
-      // 1. Play gentle sound immediately
       playGentleChime();
-
       const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      // 2. Increment bowls served count (+1) sa database
       db.ref('/logs/today_count').transaction((currentCount) => {
         return (currentCount || 0) + 1;
       });
 
-      // 3. Update Last Fed timestamp sa database
       db.ref('/logs/last_fed').set(currentTimeStr);
 
-      // 4. Trigger ESP32 flag
       db.ref('/feeder_config').update({ manual_trigger: true }).then(() => {
         addLog('Manual snack dispensed', currentTimeStr);
         setTimeout(() => {
@@ -370,6 +447,8 @@
       };
 
       db.ref('/schedules').set(payload).then(() => {
+        currentSchedules = payload;
+        updateNextMealCountdown();
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save Schedule Settings';
         addLog('Schedules synced to cloud');
