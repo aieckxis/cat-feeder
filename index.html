@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Feeder Dashboard</title>
+  <title>MeowMunch — Smart Cat Feeder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,11 +18,11 @@
 
   <main class="w-full max-w-md space-y-4">
 
-    <!-- Cozy Top Bar -->
+    <!-- Header Section with MeowMunch Branding -->
     <header class="flex justify-between items-center bg-white/90 backdrop-blur-sm border border-stone-200/80 p-4 rounded-3xl shadow-sm">
       <div class="space-y-0.5">
-        <h1 class="text-lg font-bold text-stone-800 tracking-tight">Smart Pet Feeder</h1>
-        <p class="text-[11px] font-semibold text-stone-400">Automatic Feeding Routine</p>
+        <h1 class="text-xl font-bold text-stone-800 tracking-tight">MeowMunch</h1>
+        <p class="text-[11px] font-semibold text-stone-400">Smart Automatic Feeder</p>
       </div>
 
       <div class="flex items-center space-x-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full">
@@ -162,7 +162,7 @@
       </div>
       <ul id="logList" class="space-y-1.5 text-xs text-stone-600">
         <li class="p-2.5 bg-[#FAF7F2] rounded-xl flex justify-between items-center">
-          <span class="font-semibold text-stone-700">Feeder ready</span>
+          <span class="font-semibold text-stone-700">MeowMunch initialized</span>
           <span class="text-[10px] text-stone-400 font-bold">Ready</span>
         </li>
       </ul>
@@ -180,7 +180,7 @@
     let feedCount = 0;
 
     window.addEventListener('DOMContentLoaded', () => {
-      const saved = JSON.parse(localStorage.getItem('cozyFeederData') || '{}');
+      const saved = JSON.parse(localStorage.getItem('meowMunchData') || '{}');
       if (saved.lastFed) lastFedDisplay.textContent = saved.lastFed;
       if (saved.feedCount) {
         feedCount = saved.feedCount;
@@ -227,10 +227,10 @@
 
         addLog('Manual snack dispensed');
 
-        const saved = JSON.parse(localStorage.getItem('cozyFeederData') || '{}');
+        const saved = JSON.parse(localStorage.getItem('meowMunchData') || '{}');
         saved.lastFed = time;
         saved.feedCount = feedCount;
-        localStorage.setItem('cozyFeederData', JSON.stringify(saved));
+        localStorage.setItem('meowMunchData', JSON.stringify(saved));
 
         manualBtn.disabled = false;
         manualBtn.classList.remove('opacity-70');
@@ -258,9 +258,9 @@
         }
       };
 
-      const saved = JSON.parse(localStorage.getItem('cozyFeederData') || '{}');
+      const saved = JSON.parse(localStorage.getItem('meowMunchData') || '{}');
       saved.schedules = payload;
-      localStorage.setItem('cozyFeederData', JSON.stringify(saved));
+      localStorage.setItem('meowMunchData', JSON.stringify(saved));
 
       addLog('Schedule updated');
       alert('Schedules saved successfully!');
