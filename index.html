@@ -118,7 +118,6 @@
           <span class="text-[11px] font-bold text-emerald-700">Online</span>
         </div>
         
-        <!-- Settings Trigger Button -->
         <button 
           id="openSettingsBtn" 
           type="button" 
@@ -131,7 +130,6 @@
           </svg>
         </button>
 
-        <!-- Logout Button -->
         <button 
           id="logoutBtn" 
           type="button" 
@@ -172,18 +170,32 @@
       </button>
     </section>
 
-    <!-- Next Routine Countdown Banner -->
-    <section class="bg-[#EEF4F8] border border-[#D5E3EC] p-3.5 rounded-3xl shadow-sm flex items-center justify-between">
-      <div class="flex items-center space-x-2.5">
-        <span class="text-base">⏰</span>
-        <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Upcoming Meal</span>
-          <p id="nextMealDisplay" class="text-xs font-bold text-[#3D405B]">Calculating next schedule...</p>
+    <!-- Next Routine Countdown Banner with Skip Button -->
+    <section class="bg-[#EEF4F8] border border-[#D5E3EC] p-3.5 rounded-3xl shadow-sm space-y-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-base">⏰</span>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Upcoming Meal</span>
+            <p id="nextMealDisplay" class="text-xs font-bold text-[#3D405B]">Calculating next schedule...</p>
+          </div>
         </div>
+        <span id="countdownBadge" class="text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs">
+          --
+        </span>
       </div>
-      <span id="countdownBadge" class="text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs">
-        --
-      </span>
+
+      <!-- Skip Next Routine Action -->
+      <div class="flex items-center justify-between pt-1.5 border-t border-[#D5E3EC]/60">
+        <span class="text-[11px] font-semibold text-stone-500">Skip this upcoming meal routine?</span>
+        <button 
+          id="skipRoutineBtn" 
+          type="button" 
+          class="px-2.5 py-1 bg-white hover:bg-stone-100 active:scale-95 text-[#E07A5F] border border-stone-200 font-bold text-[10px] rounded-xl transition cursor-pointer shadow-2xs"
+        >
+          Skip Meal
+        </button>
+      </div>
     </section>
 
     <!-- Quick Status Cards -->
@@ -199,19 +211,46 @@
       </div>
     </section>
 
-    <!-- Instant Feed Action -->
-    <section class="bg-[#FFF4EE] border border-[#FFE2D4] p-4.5 rounded-3xl shadow-sm flex items-center justify-between">
-      <div class="space-y-0.5">
-        <h2 class="text-xs font-bold text-[#D96B43]">Extra Snack</h2>
-        <p class="text-[11px] text-stone-500 font-medium">Dispense one standard portion</p>
+    <!-- Instant Feed Action with Portion Selector Pills -->
+    <section class="bg-[#FFF4EE] border border-[#FFE2D4] p-4 rounded-3xl shadow-sm space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="space-y-0.5">
+          <h2 class="text-xs font-bold text-[#D96B43]">Extra Snack</h2>
+          <p class="text-[11px] text-stone-500 font-medium">Select snack portion size</p>
+        </div>
+        <button 
+          id="manualFeedBtn"
+          type="button"
+          class="py-2 px-4 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-95 text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer"
+        >
+          Feed Now
+        </button>
       </div>
-      <button 
-        id="manualFeedBtn"
-        type="button"
-        class="py-2.5 px-4 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-95 text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer"
-      >
-        Feed Now
-      </button>
+
+      <!-- Quick Portion Pills -->
+      <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+        <button 
+          type="button" 
+          data-portion="10g" 
+          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition"
+        >
+          10g Snack
+        </button>
+        <button 
+          type="button" 
+          data-portion="25g" 
+          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition"
+        >
+          25g Portion
+        </button>
+        <button 
+          type="button" 
+          data-portion="40g" 
+          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition"
+        >
+          40g Big Treat
+        </button>
+      </div>
     </section>
 
     <!-- Feeding Schedule (3 Slots) -->
@@ -330,7 +369,7 @@
 
   </main>
 
-  <!-- ── 4. SETTINGS MODAL DIALOG ─────────────────────────────── -->
+  <!-- ── SETTINGS MODAL DIALOG ────────────────────────────────── -->
   <div id="settingsModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
       <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -410,7 +449,7 @@
     </div>
   </div>
 
-  <!-- ── 5. EDIT PROFILE MODAL DIALOG ─────────────────────────── -->
+  <!-- ── EDIT PROFILE MODAL DIALOG ─────────────────────────────── -->
   <div id="profileModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
       <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -479,7 +518,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // DOM Elements - Splash, Auth, Settings & App
+    // DOM Elements
     const splashScreen = document.getElementById('splashScreen');
     const authContainer = document.getElementById('authContainer');
     const appContainer = document.getElementById('appContainer');
@@ -492,7 +531,6 @@
     const userEmailTag = document.getElementById('userEmailTag');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Settings Modal DOM
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
     const settingsModal = document.getElementById('settingsModal');
@@ -504,7 +542,6 @@
     const exportCsvBtn = document.getElementById('exportCsvBtn');
     const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 
-    // Profile DOM Elements
     const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
     const profileNameDisplay = document.getElementById('profileNameDisplay');
     const profileGoalTag = document.getElementById('profileGoalTag');
@@ -519,8 +556,9 @@
     const modalTargetMeals = document.getElementById('modalTargetMeals');
     const modalTargetGrams = document.getElementById('modalTargetGrams');
 
-    // Dashboard DOM Elements
     const manualBtn = document.getElementById('manualFeedBtn');
+    const portionPills = document.querySelectorAll('.portion-pill');
+    const skipRoutineBtn = document.getElementById('skipRoutineBtn');
     const saveBtn = document.getElementById('saveScheduleBtn');
     const lastFedDisplay = document.getElementById('lastFedDisplay');
     const feedCountDisplay = document.getElementById('feedCountDisplay');
@@ -535,6 +573,8 @@
     let currentSchedules = null;
     let tempAvatarBase64 = null;
     let activityLogData = [];
+    let selectedSnackPortion = "25g";
+    let isSkipNextActive = false;
 
     // ── 1. AUTH STATE PERSISTENCE ─────────────────────────────────
     auth.onAuthStateChanged((user) => {
@@ -608,7 +648,33 @@
       }
     });
 
-    // ── 2. SETTINGS PREFERENCES & AUDIO SYNTHESIZERS ──────────────
+    // ── 2. PORTION SELECTION PILLS ────────────────────────────────
+    portionPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        portionPills.forEach(p => {
+          p.className = 'portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition cursor-pointer';
+        });
+        pill.className = 'portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition cursor-pointer';
+        selectedSnackPortion = pill.getAttribute('data-portion');
+      });
+    });
+
+    // ── 3. SKIP NEXT ROUTINE BUTTON LOGIC ─────────────────────────
+    skipRoutineBtn.addEventListener('click', () => {
+      isSkipNextActive = !isSkipNextActive;
+      if (isSkipNextActive) {
+        skipRoutineBtn.textContent = 'Skipping Next ✓';
+        skipRoutineBtn.className = 'px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 font-bold text-[10px] rounded-xl transition cursor-pointer';
+        addLog('Upcoming scheduled routine will be skipped');
+      } else {
+        skipRoutineBtn.textContent = 'Skip Meal';
+        skipRoutineBtn.className = 'px-2.5 py-1 bg-white hover:bg-stone-100 text-[#E07A5F] border border-stone-200 font-bold text-[10px] rounded-xl transition cursor-pointer shadow-2xs';
+        addLog('Skip routine cancelled');
+      }
+      updateNextMealCountdown();
+    });
+
+    // ── 4. SETTINGS PREFERENCES & AUDIO SYNTHESIZERS ──────────────
     function loadSettingsPreferences() {
       const sound = localStorage.getItem('meowMunch_sound') || 'chime';
       const duration = localStorage.getItem('meowMunch_motorDuration') || '2.0';
@@ -648,7 +714,6 @@
       }
     });
 
-    // Web Audio Synthesizer (Chime or Cute Meow)
     function playActiveSound() {
       const soundType = localStorage.getItem('meowMunch_sound') || 'chime';
       if (soundType === 'mute') return;
@@ -659,7 +724,7 @@
         const now = ctx.currentTime;
 
         if (soundType === 'chime') {
-          const frequencies = [587.33, 880, 1174.66]; // Soft triad
+          const frequencies = [587.33, 880, 1174.66];
           frequencies.forEach((freq, index) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -674,7 +739,6 @@
             osc.stop(now + (index * 0.08) + 1.0);
           });
         } else if (soundType === 'meow') {
-          // Synthesized soft meow glide
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'triangle';
@@ -709,15 +773,12 @@
       localStorage.setItem('meowMunch_sound', selectedSound);
       localStorage.setItem('meowMunch_motorDuration', duration);
 
-      // Sync duration sa Firebase para sa ESP32
       db.ref('/feeder_config').update({ dispense_duration: parseFloat(duration) });
-
       settingsModal.classList.add('hidden');
       addLog('Settings preferences updated');
       playActiveSound();
     });
 
-    // Export Logs as CSV
     exportCsvBtn.addEventListener('click', () => {
       if (activityLogData.length === 0) {
         alert('No activity logs recorded yet to export.');
@@ -736,7 +797,7 @@
       document.body.removeChild(link);
     });
 
-    // ── 3. CAT PROFILE LOGIC ──────────────────────────────────────
+    // ── 5. CAT PROFILE LOGIC ──────────────────────────────────────
     function loadCatProfile() {
       const defaultAvatar = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80";
       const profile = JSON.parse(localStorage.getItem('meowMunch_profile') || '{}');
@@ -795,7 +856,7 @@
       playActiveSound();
     });
 
-    // ── 4. MIDNIGHT AUTO-RESET ────────────────────────────────────
+    // ── 6. MIDNIGHT AUTO-RESET ────────────────────────────────────
     function checkMidnightReset() {
       const todayDate = new Date().toISOString().split('T')[0];
       const lastResetDate = localStorage.getItem('meowMunch_lastResetDate');
@@ -835,12 +896,12 @@
       addLog('Activity history cleared');
     });
 
-    // ── 5. NEXT MEAL COUNTDOWN TIMER ──────────────────────────────
+    // ── 7. NEXT MEAL COUNTDOWN TIMER ──────────────────────────────
     function updateNextMealCountdown() {
       if (!currentSchedules) return;
 
       const now = new Date();
-      const slots = [
+      let slots = [
         { name: 'Breakfast', ...currentSchedules.slot_1 },
         { name: 'Lunch', ...currentSchedules.slot_2 },
         { name: 'Dinner', ...currentSchedules.slot_3 }
@@ -874,14 +935,21 @@
         const hours = Math.floor(totalMinutes / 60);
         const mins = totalMinutes % 60;
 
-        nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime})`;
-        countdownBadge.textContent = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
+        if (isSkipNextActive) {
+          nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime}) - Skipped`;
+          countdownBadge.textContent = 'Skipped ⏸';
+          countdownBadge.className = 'text-[11px] font-bold bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-full shadow-2xs';
+        } else {
+          nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime})`;
+          countdownBadge.textContent = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
+          countdownBadge.className = 'text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs';
+        }
       }
     }
 
     setInterval(updateNextMealCountdown, 30000);
 
-    // ── 6. FIREBASE REALTIME SYNC ─────────────────────────────────
+    // ── 8. FIREBASE REALTIME SYNC ─────────────────────────────────
     db.ref('/logs/last_fed').on('value', (snap) => {
       const val = snap.val();
       if (val) {
@@ -922,10 +990,10 @@
       }
     });
 
-    // ── 7. MANUAL FEED TRIGGER & SCHEDULE SAVE ────────────────────
+    // ── 9. MANUAL FEED TRIGGER & SCHEDULE SAVE ────────────────────
     manualBtn.addEventListener('click', () => {
       manualBtn.disabled = true;
-      manualBtn.textContent = 'Dispensing Snack...';
+      manualBtn.textContent = 'Dispensing...';
 
       playActiveSound();
       const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -933,8 +1001,11 @@
       db.ref('/logs/today_count').transaction((currentCount) => (currentCount || 0) + 1);
       db.ref('/logs/last_fed').set(currentTimeStr);
 
-      db.ref('/feeder_config').update({ manual_trigger: true }).then(() => {
-        addLog(`Snack dispensed for ${profileNameDisplay.textContent}`, currentTimeStr);
+      db.ref('/feeder_config').update({ 
+        manual_trigger: true,
+        snack_portion: selectedSnackPortion
+      }).then(() => {
+        addLog(`Snack dispensed (${selectedSnackPortion}) for ${profileNameDisplay.textContent}`, currentTimeStr);
         setTimeout(() => {
           manualBtn.disabled = false;
           manualBtn.textContent = 'Feed Now';
