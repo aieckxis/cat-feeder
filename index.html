@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDKs (App, Auth, and Database) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -46,7 +46,7 @@
 </head>
 <body class="bg-[#FBF8F5] text-stone-700 min-h-screen p-4 sm:p-8 flex justify-center items-start relative">
 
-  <!-- ── 1. INTRO / SPLASH SCREEN OVERLAY ───────────────────────── -->
+  <!-- ── INTRO / SPLASH SCREEN OVERLAY ───────────────────────── -->
   <div id="splashScreen" class="fixed inset-0 bg-[#FBF8F5] z-50 flex flex-col items-center justify-center p-6 text-center">
     <div class="space-y-4">
       <div class="w-20 h-20 bg-white border border-stone-200/80 shadow-md rounded-3xl flex items-center justify-center mx-auto splash-icon p-4">
@@ -62,7 +62,7 @@
     </div>
   </div>
 
-  <!-- ── 2. AUTHENTICATION CONTAINER (LOG IN / SIGN UP) ───────── -->
+  <!-- ── AUTHENTICATION CONTAINER ─────────────────────────────── -->
   <div id="authContainer" class="w-full max-w-md bg-white border border-stone-200/80 rounded-3xl p-6 shadow-sm space-y-5 hidden">
     <div class="text-center space-y-2">
       <div class="w-14 h-14 bg-[#FAF7F2] border border-stone-200/70 rounded-2xl flex items-center justify-center mx-auto p-3 shadow-2xs">
@@ -72,57 +72,35 @@
       <p id="authSubtitle" class="text-xs font-semibold text-stone-400">Log in to manage your smart pet feeder</p>
     </div>
 
-    <!-- Error message display -->
     <div id="authError" class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-xs font-bold text-center hidden"></div>
 
     <form id="authForm" class="space-y-3">
       <div class="space-y-1">
         <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Email Address</label>
-        <input 
-          type="email" 
-          id="authEmail" 
-          required 
-          class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" 
-          placeholder="furparent@example.com" 
-        />
+        <input type="email" id="authEmail" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="furparent@example.com" />
       </div>
 
       <div class="space-y-1">
         <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Password</label>
-        <input 
-          type="password" 
-          id="authPassword" 
-          required 
-          minlength="6"
-          class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" 
-          placeholder="••••••••" 
-        />
+        <input type="password" id="authPassword" required minlength="6" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="••••••••" />
       </div>
 
-      <button 
-        type="submit" 
-        id="authSubmitBtn"
-        class="w-full py-3 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer mt-1"
-      >
+      <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer mt-1">
         Log In
       </button>
     </form>
 
     <div class="text-center pt-1 border-t border-stone-100">
-      <button 
-        id="toggleAuthModeBtn" 
-        type="button" 
-        class="text-xs font-bold text-[#81B29A] hover:underline cursor-pointer"
-      >
+      <button id="toggleAuthModeBtn" type="button" class="text-xs font-bold text-[#81B29A] hover:underline cursor-pointer">
         Don't have an account? Sign Up
       </button>
     </div>
   </div>
 
-  <!-- ── 3. MAIN DASHBOARD APPLICATION ────────────────────────── -->
+  <!-- ── MAIN DASHBOARD APPLICATION ───────────────────────────── -->
   <main id="appContainer" class="w-full max-w-md space-y-4 hidden">
 
-    <!-- Header Section -->
+    <!-- Header Section with Settings Button -->
     <header class="flex justify-between items-center bg-white/90 backdrop-blur-sm border border-stone-200/80 p-4 rounded-3xl shadow-sm">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 bg-[#FAF7F2] border border-stone-200/70 rounded-2xl flex items-center justify-center p-2 shadow-2xs">
@@ -139,18 +117,33 @@
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-[11px] font-bold text-emerald-700">Online</span>
         </div>
+        
+        <!-- Settings Trigger Button -->
         <button 
-          id="logoutBtn"
-          type="button"
-          title="Sign out of device"
-          class="p-1.5 bg-stone-100 hover:bg-rose-50 hover:text-rose-600 text-stone-500 rounded-full transition cursor-pointer text-xs"
+          id="openSettingsBtn" 
+          type="button" 
+          title="App Settings" 
+          class="p-2 bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-600 rounded-2xl transition cursor-pointer border border-stone-200"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+        </button>
+
+        <!-- Logout Button -->
+        <button 
+          id="logoutBtn" 
+          type="button" 
+          title="Sign out of device" 
+          class="p-2 bg-stone-100 hover:bg-rose-50 hover:text-rose-600 text-stone-500 rounded-2xl transition cursor-pointer border border-stone-200"
         >
           🚪
         </button>
       </div>
     </header>
 
-    <!-- Cat Profile Card with Edit Button -->
+    <!-- Cat Profile Card -->
     <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm flex items-center justify-between">
       <div class="flex items-center space-x-3.5">
         <img 
@@ -191,21 +184,6 @@
       <span id="countdownBadge" class="text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs">
         --
       </span>
-    </section>
-
-    <!-- Audio & Alert Preferences Card -->
-    <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm flex items-center justify-between">
-      <div>
-        <span class="text-xs font-bold text-stone-800">Dispense Alerts</span>
-        <p class="text-[11px] text-stone-400 font-medium">Browser push & gentle chime</p>
-      </div>
-      <button 
-        id="enableNotifBtn"
-        type="button"
-        class="py-1.5 px-3 bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-700 font-bold text-xs rounded-xl transition duration-150 cursor-pointer border border-stone-200"
-      >
-        Enable Sound & Alerts
-      </button>
     </section>
 
     <!-- Quick Status Cards -->
@@ -323,8 +301,8 @@
         </div>
 
         <button 
-          type="submit"
-          id="saveScheduleBtn"
+          type="submit" 
+          id="saveScheduleBtn" 
           class="w-full py-3 bg-[#3D405B] hover:bg-[#32354B] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 cursor-pointer shadow-sm mt-2"
         >
           Save Schedule Settings
@@ -340,8 +318,8 @@
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
         </div>
         <button 
-          id="clearLogsBtn"
-          type="button"
+          id="clearLogsBtn" 
+          type="button" 
           class="text-[10px] font-bold text-stone-400 hover:text-rose-500 transition cursor-pointer"
         >
           Clear History
@@ -352,7 +330,87 @@
 
   </main>
 
-  <!-- EDIT PROFILE MODAL DIALOG -->
+  <!-- ── 4. SETTINGS MODAL DIALOG ─────────────────────────────── -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="text-base">⚙️</span>
+          <h3 class="text-sm font-bold text-stone-800">Feeder Settings</h3>
+        </div>
+        <button id="closeSettingsModalBtn" type="button" class="text-stone-400 hover:text-stone-600 font-bold text-sm cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        
+        <!-- Sound Effect Selector -->
+        <div class="space-y-1.5">
+          <label for="soundEffectSelect" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Dispense Sound Effect</label>
+          <select id="soundEffectSelect" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+            <option value="chime">Gentle Bell Chime</option>
+            <option value="meow">Cute Cat Meow (Synth)</option>
+            <option value="mute">Mute / Silent</option>
+          </select>
+          <button id="testSoundBtn" type="button" class="text-[10px] font-bold text-[#E07A5F] hover:underline cursor-pointer pt-0.5">
+            ▶ Test Sound Preview
+          </button>
+        </div>
+
+        <!-- Push Notifications Toggle -->
+        <div class="flex items-center justify-between p-3 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl">
+          <div>
+            <span class="font-bold text-stone-800 text-xs">Browser Push Alerts</span>
+            <p class="text-[10px] text-stone-400 font-medium">Notify when feeding triggers</p>
+          </div>
+          <button 
+            id="togglePushNotifBtn" 
+            type="button" 
+            class="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 font-bold text-[10px] rounded-lg transition"
+          >
+            Enable
+          </button>
+        </div>
+
+        <!-- Dispense Calibration Slider -->
+        <div class="space-y-1.5 p-3 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-stone-800 text-xs">Motor Dispense Speed</span>
+            <span id="motorDurationLabel" class="text-[11px] font-bold text-[#E07A5F]">2.0s</span>
+          </div>
+          <input 
+            type="range" 
+            id="motorDurationRange" 
+            min="1.0" 
+            max="4.0" 
+            step="0.5" 
+            value="2.0" 
+            class="w-full accent-[#E07A5F] cursor-pointer"
+          />
+          <p class="text-[10px] text-stone-400">Controls how long the dispenser rotates.</p>
+        </div>
+
+        <!-- Export CSV Button -->
+        <button 
+          id="exportCsvBtn" 
+          type="button" 
+          class="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer"
+        >
+          <span>📥</span>
+          <span>Export Activity Logs (CSV)</span>
+        </button>
+
+        <button 
+          id="saveSettingsBtn" 
+          type="button" 
+          class="w-full py-2.5 bg-[#81B29A] hover:bg-[#72A28A] active:scale-[0.99] text-white font-bold rounded-xl transition shadow-sm cursor-pointer"
+        >
+          Save Preferences
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. EDIT PROFILE MODAL DIALOG ─────────────────────────── -->
   <div id="profileModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
       <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -421,7 +479,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // DOM Elements - Splash & Auth
+    // DOM Elements - Splash, Auth, Settings & App
     const splashScreen = document.getElementById('splashScreen');
     const authContainer = document.getElementById('authContainer');
     const appContainer = document.getElementById('appContainer');
@@ -434,7 +492,19 @@
     const userEmailTag = document.getElementById('userEmailTag');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // DOM Elements - Dashboard
+    // Settings Modal DOM
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const soundEffectSelect = document.getElementById('soundEffectSelect');
+    const testSoundBtn = document.getElementById('testSoundBtn');
+    const togglePushNotifBtn = document.getElementById('togglePushNotifBtn');
+    const motorDurationRange = document.getElementById('motorDurationRange');
+    const motorDurationLabel = document.getElementById('motorDurationLabel');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+    // Profile DOM Elements
     const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
     const profileNameDisplay = document.getElementById('profileNameDisplay');
     const profileGoalTag = document.getElementById('profileGoalTag');
@@ -449,7 +519,7 @@
     const modalTargetMeals = document.getElementById('modalTargetMeals');
     const modalTargetGrams = document.getElementById('modalTargetGrams');
 
-    const enableNotifBtn = document.getElementById('enableNotifBtn');
+    // Dashboard DOM Elements
     const manualBtn = document.getElementById('manualFeedBtn');
     const saveBtn = document.getElementById('saveScheduleBtn');
     const lastFedDisplay = document.getElementById('lastFedDisplay');
@@ -464,29 +534,28 @@
     let isInitialLoad = true;
     let currentSchedules = null;
     let tempAvatarBase64 = null;
+    let activityLogData = [];
 
-    // ── 1. AUTH STATE PERSISTENCE (Handles Splash vs Login) ───────
+    // ── 1. AUTH STATE PERSISTENCE ─────────────────────────────────
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // Naka-login na: Ipakita ang Intro Splash saglit bago mag-load ang dashboard
         userEmailTag.textContent = user.email;
         authContainer.classList.add('hidden');
         appContainer.classList.remove('hidden');
         loadCatProfile();
+        loadSettingsPreferences();
         checkMidnightReset();
 
         setTimeout(() => {
           splashScreen.classList.add('splash-hidden');
         }, 1200);
       } else {
-        // Bagong device o naka-logout: Diretso sa Login/Sign-up
         splashScreen.classList.add('splash-hidden');
         appContainer.classList.add('hidden');
         authContainer.classList.remove('hidden');
       }
     });
 
-    // Toggle Login vs Sign Up Mode
     toggleAuthModeBtn.addEventListener('click', () => {
       isSigningUp = !isSigningUp;
       authError.classList.add('hidden');
@@ -503,7 +572,6 @@
       }
     });
 
-    // Handle Auth Submit
     authForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
@@ -531,7 +599,6 @@
       }
     });
 
-    // Handle Log Out
     logoutBtn.addEventListener('click', () => {
       if (confirm('Are you sure you want to log out of this device?')) {
         auth.signOut().then(() => {
@@ -541,7 +608,135 @@
       }
     });
 
-    // ── 2. CAT PROFILE LOGIC ──────────────────────────────────────
+    // ── 2. SETTINGS PREFERENCES & AUDIO SYNTHESIZERS ──────────────
+    function loadSettingsPreferences() {
+      const sound = localStorage.getItem('meowMunch_sound') || 'chime';
+      const duration = localStorage.getItem('meowMunch_motorDuration') || '2.0';
+
+      soundEffectSelect.value = sound;
+      motorDurationRange.value = duration;
+      motorDurationLabel.textContent = `${duration}s`;
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        togglePushNotifBtn.textContent = 'Active ✓';
+        togglePushNotifBtn.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px] rounded-lg';
+      }
+    }
+
+    openSettingsBtn.addEventListener('click', () => {
+      loadSettingsPreferences();
+      settingsModal.classList.remove('hidden');
+    });
+
+    closeSettingsModalBtn.addEventListener('click', () => {
+      settingsModal.classList.add('hidden');
+    });
+
+    motorDurationRange.addEventListener('input', (e) => {
+      motorDurationLabel.textContent = `${e.target.value}s`;
+    });
+
+    togglePushNotifBtn.addEventListener('click', () => {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            togglePushNotifBtn.textContent = 'Active ✓';
+            togglePushNotifBtn.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px] rounded-lg';
+            playActiveSound();
+          }
+        });
+      }
+    });
+
+    // Web Audio Synthesizer (Chime or Cute Meow)
+    function playActiveSound() {
+      const soundType = localStorage.getItem('meowMunch_sound') || 'chime';
+      if (soundType === 'mute') return;
+
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        if (soundType === 'chime') {
+          const frequencies = [587.33, 880, 1174.66]; // Soft triad
+          frequencies.forEach((freq, index) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + (index * 0.08));
+            gain.gain.setValueAtTime(0, now + (index * 0.08));
+            gain.gain.linearRampToValueAtTime(0.15, now + (index * 0.08) + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + (index * 0.08) + 0.9);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + (index * 0.08));
+            osc.stop(now + (index * 0.08) + 1.0);
+          });
+        } else if (soundType === 'meow') {
+          // Synthesized soft meow glide
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + 0.15);
+          osc.frequency.exponentialRampToValueAtTime(500, now + 0.35);
+
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(0.18, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        }
+      } catch (e) {
+        console.warn('Audio synthesis failed:', e);
+      }
+    }
+
+    testSoundBtn.addEventListener('click', () => {
+      const selected = soundEffectSelect.value;
+      localStorage.setItem('meowMunch_sound', selected);
+      playActiveSound();
+    });
+
+    saveSettingsBtn.addEventListener('click', () => {
+      const selectedSound = soundEffectSelect.value;
+      const duration = motorDurationRange.value;
+
+      localStorage.setItem('meowMunch_sound', selectedSound);
+      localStorage.setItem('meowMunch_motorDuration', duration);
+
+      // Sync duration sa Firebase para sa ESP32
+      db.ref('/feeder_config').update({ dispense_duration: parseFloat(duration) });
+
+      settingsModal.classList.add('hidden');
+      addLog('Settings preferences updated');
+      playActiveSound();
+    });
+
+    // Export Logs as CSV
+    exportCsvBtn.addEventListener('click', () => {
+      if (activityLogData.length === 0) {
+        alert('No activity logs recorded yet to export.');
+        return;
+      }
+      let csvContent = "data:text/csv;charset=utf-8,Action,Timestamp\n";
+      activityLogData.forEach(row => {
+        csvContent += `"${row.action}","${row.time}"\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `MeowMunch_Logs_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // ── 3. CAT PROFILE LOGIC ──────────────────────────────────────
     function loadCatProfile() {
       const defaultAvatar = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80";
       const profile = JSON.parse(localStorage.getItem('meowMunch_profile') || '{}');
@@ -597,10 +792,10 @@
       loadCatProfile();
       profileModal.classList.add('hidden');
       addLog(`Updated profile details for ${newProfile.name}`);
-      playGentleChime();
+      playActiveSound();
     });
 
-    // ── 3. MIDNIGHT AUTO-RESET ────────────────────────────────────
+    // ── 4. MIDNIGHT AUTO-RESET ────────────────────────────────────
     function checkMidnightReset() {
       const todayDate = new Date().toISOString().split('T')[0];
       const lastResetDate = localStorage.getItem('meowMunch_lastResetDate');
@@ -614,34 +809,8 @@
 
     setInterval(checkMidnightReset, 60000);
 
-    // ── 4. WEB AUDIO SYNTHESIZER ──────────────────────────────────
-    function playGentleChime() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioCtx();
-        const now = ctx.currentTime;
-        const frequencies = [587.33, 880, 1174.66];
-
-        frequencies.forEach((freq, index) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + (index * 0.08));
-          gain.gain.setValueAtTime(0, now + (index * 0.08));
-          gain.gain.linearRampToValueAtTime(0.15, now + (index * 0.08) + 0.03);
-          gain.gain.exponentialRampToValueAtTime(0.0001, now + (index * 0.08) + 0.9);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now + (index * 0.08));
-          osc.stop(now + (index * 0.08) + 1.0);
-        });
-      } catch (e) {
-        console.warn('Audio Context error:', e);
-      }
-    }
-
     function triggerNotification(title, message) {
-      playGentleChime();
+      playActiveSound();
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(title, {
           body: message,
@@ -650,20 +819,10 @@
       }
     }
 
-    enableNotifBtn.addEventListener('click', () => {
-      playGentleChime();
-      if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            enableNotifBtn.textContent = 'Alerts Active ✓';
-            enableNotifBtn.className = 'py-1.5 px-3 bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-xs rounded-xl';
-          }
-        });
-      }
-    });
-
     function addLog(action, time) {
       const displayTime = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      activityLogData.unshift({ action, time: displayTime });
+
       const li = document.createElement('li');
       li.className = 'p-2.5 bg-[#FAF7F2] rounded-xl flex justify-between items-center';
       li.innerHTML = `<span class="font-semibold text-stone-700">${action}</span><span class="text-[10px] text-stone-400 font-bold">${displayTime}</span>`;
@@ -672,6 +831,7 @@
 
     clearLogsBtn.addEventListener('click', () => {
       logList.innerHTML = '';
+      activityLogData = [];
       addLog('Activity history cleared');
     });
 
@@ -762,12 +922,12 @@
       }
     });
 
-    // ── 7. FEED BUTTON & FORM ACTIONS ─────────────────────────────
+    // ── 7. MANUAL FEED TRIGGER & SCHEDULE SAVE ────────────────────
     manualBtn.addEventListener('click', () => {
       manualBtn.disabled = true;
       manualBtn.textContent = 'Dispensing Snack...';
 
-      playGentleChime();
+      playActiveSound();
       const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       db.ref('/logs/today_count').transaction((currentCount) => (currentCount || 0) + 1);
@@ -811,7 +971,7 @@
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save Schedule Settings';
         addLog('Schedules synced to cloud');
-        playGentleChime();
+        playActiveSound();
         alert('Meal schedules successfully updated!');
       });
     });
