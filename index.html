@@ -62,8 +62,8 @@
     </div>
   </div>
 
-  <!-- ── AUTHENTICATION CONTAINER ─────────────────────────────── -->
-  <div id="authContainer" class="w-full max-w-md bg-white border border-stone-200/80 rounded-3xl p-6 shadow-sm space-y-5 hidden">
+  <!-- ── AUTHENTICATION CONTAINER (LOG IN / CUSTOM SIGN UP) ───── -->
+  <div id="authContainer" class="w-full max-w-md bg-white border border-stone-200/80 rounded-3xl p-6 shadow-sm space-y-5 hidden my-auto">
     <div class="text-center space-y-2">
       <div class="w-14 h-14 bg-[#FAF7F2] border border-stone-200/70 rounded-2xl flex items-center justify-center mx-auto p-3 shadow-2xs">
         <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Paw" class="w-8 h-8 object-contain" />
@@ -75,6 +75,8 @@
     <div id="authError" class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-xs font-bold text-center hidden"></div>
 
     <form id="authForm" class="space-y-3">
+      
+      <!-- Account Credentials -->
       <div class="space-y-1">
         <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Email Address</label>
         <input type="email" id="authEmail" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="furparent@example.com" />
@@ -85,6 +87,37 @@
         <input type="password" id="authPassword" required minlength="6" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="••••••••" />
       </div>
 
+      <!-- Sign Up Customization Fields (Hidden during Login) -->
+      <div id="signupExtraFields" class="space-y-3 border-t border-stone-100 pt-3 hidden">
+        <div class="flex items-center space-x-3">
+          <img id="signupAvatarPreview" src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Cat Preview" class="w-12 h-12 rounded-2xl object-cover border border-stone-200 bg-[#FAF7F2] p-1 shadow-2xs" />
+          <div class="flex-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">Cat Photo (Optional)</label>
+            <input type="file" id="signupPhotoInput" accept="image/*" class="text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-stone-100 file:text-stone-700 hover:file:bg-stone-200 cursor-pointer" />
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label for="signupCatName" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat's Name</label>
+          <input type="text" id="signupCatName" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. Luna, Milo, Mochi" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-1">
+            <label for="signupTargetMeals" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Target Meals</label>
+            <select id="signupTargetMeals" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-2.5 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+              <option value="2">2 Meals / day</option>
+              <option value="3" selected>3 Meals / day</option>
+              <option value="4">4 Meals / day</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label for="signupTargetGrams" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Daily Grams</label>
+            <input type="text" id="signupTargetGrams" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. 75g" value="75g" />
+          </div>
+        </div>
+      </div>
+
       <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer mt-1">
         Log In
       </button>
@@ -92,7 +125,7 @@
 
     <div class="text-center pt-1 border-t border-stone-100">
       <button id="toggleAuthModeBtn" type="button" class="text-xs font-bold text-[#81B29A] hover:underline cursor-pointer">
-        Don't have an account? Sign Up
+        Don't have an account? Sign Up & Setup Cat Profile
       </button>
     </div>
   </div>
@@ -100,7 +133,7 @@
   <!-- ── MAIN DASHBOARD APPLICATION ───────────────────────────── -->
   <main id="appContainer" class="w-full max-w-md space-y-4 hidden">
 
-    <!-- Header Section with Settings Button -->
+    <!-- Header Section with SVG Logout & Settings -->
     <header class="flex justify-between items-center bg-white/90 backdrop-blur-sm border border-stone-200/80 p-4 rounded-3xl shadow-sm">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 bg-[#FAF7F2] border border-stone-200/70 rounded-2xl flex items-center justify-center p-2 shadow-2xs">
@@ -118,6 +151,7 @@
           <span class="text-[11px] font-bold text-emerald-700">Online</span>
         </div>
         
+        <!-- Settings Trigger Button -->
         <button 
           id="openSettingsBtn" 
           type="button" 
@@ -130,13 +164,16 @@
           </svg>
         </button>
 
+        <!-- Professional SVG Logout Button (No Emoji) -->
         <button 
           id="logoutBtn" 
           type="button" 
           title="Sign out of device" 
-          class="p-2 bg-stone-100 hover:bg-rose-50 hover:text-rose-600 text-stone-500 rounded-2xl transition cursor-pointer border border-stone-200"
+          class="p-2 bg-stone-100 hover:bg-rose-50 hover:text-rose-600 text-stone-500 rounded-2xl transition cursor-pointer border border-stone-200 flex items-center justify-center"
         >
-          🚪
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
         </button>
       </div>
     </header>
@@ -146,13 +183,13 @@
       <div class="flex items-center space-x-3.5">
         <img 
           id="profileAvatarDisplay" 
-          src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80" 
+          src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" 
           alt="Cat Avatar" 
-          class="w-14 h-14 rounded-2xl object-cover border-2 border-stone-100 shadow-2xs"
+          class="w-14 h-14 rounded-2xl object-cover border-2 border-stone-100 shadow-2xs bg-[#FAF7F2]"
         />
         <div class="space-y-1">
           <div class="flex items-center space-x-2">
-            <h2 id="profileNameDisplay" class="text-sm font-bold text-stone-800">Mochi</h2>
+            <h2 id="profileNameDisplay" class="text-sm font-bold text-stone-800">My Cat</h2>
             <span id="profileGoalTag" class="text-[10px] font-bold px-2 py-0.5 bg-[#FAF7F2] text-stone-500 rounded-full border border-stone-200/60">
               Goal: 3 Meals
             </span>
@@ -232,21 +269,21 @@
         <button 
           type="button" 
           data-portion="10g" 
-          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition"
+          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition cursor-pointer"
         >
           10g Snack
         </button>
         <button 
           type="button" 
           data-portion="25g" 
-          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition"
+          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition cursor-pointer"
         >
           25g Portion
         </button>
         <button 
           type="button" 
           data-portion="40g" 
-          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition"
+          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition cursor-pointer"
         >
           40g Big Treat
         </button>
@@ -404,7 +441,7 @@
           <button 
             id="togglePushNotifBtn" 
             type="button" 
-            class="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 font-bold text-[10px] rounded-lg transition"
+            class="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 font-bold text-[10px] rounded-lg transition cursor-pointer"
           >
             Enable
           </button>
@@ -459,7 +496,7 @@
 
       <form id="profileEditForm" class="space-y-3.5">
         <div class="flex items-center space-x-3">
-          <img id="modalAvatarPreview" src="" alt="Preview" class="w-12 h-12 rounded-2xl object-cover border border-stone-200 shadow-2xs" />
+          <img id="modalAvatarPreview" src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Preview" class="w-12 h-12 rounded-2xl object-cover border border-stone-200 shadow-2xs bg-[#FAF7F2]" />
           <div class="flex-1">
             <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">Cat Photo</label>
             <input type="file" id="modalPhotoInput" accept="image/*" class="text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-stone-100 file:text-stone-700 hover:file:bg-stone-200 cursor-pointer" />
@@ -518,7 +555,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // DOM Elements
+    // DOM Elements - Splash & Auth
     const splashScreen = document.getElementById('splashScreen');
     const authContainer = document.getElementById('authContainer');
     const appContainer = document.getElementById('appContainer');
@@ -531,6 +568,15 @@
     const userEmailTag = document.getElementById('userEmailTag');
     const logoutBtn = document.getElementById('logoutBtn');
 
+    // Sign Up Specific Inputs
+    const signupExtraFields = document.getElementById('signupExtraFields');
+    const signupPhotoInput = document.getElementById('signupPhotoInput');
+    const signupAvatarPreview = document.getElementById('signupAvatarPreview');
+    const signupCatName = document.getElementById('signupCatName');
+    const signupTargetMeals = document.getElementById('signupTargetMeals');
+    const signupTargetGrams = document.getElementById('signupTargetGrams');
+
+    // Settings Modal DOM
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
     const settingsModal = document.getElementById('settingsModal');
@@ -542,6 +588,7 @@
     const exportCsvBtn = document.getElementById('exportCsvBtn');
     const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 
+    // Profile DOM Elements
     const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
     const profileNameDisplay = document.getElementById('profileNameDisplay');
     const profileGoalTag = document.getElementById('profileGoalTag');
@@ -556,6 +603,7 @@
     const modalTargetMeals = document.getElementById('modalTargetMeals');
     const modalTargetGrams = document.getElementById('modalTargetGrams');
 
+    // Dashboard DOM Elements
     const manualBtn = document.getElementById('manualFeedBtn');
     const portionPills = document.querySelectorAll('.portion-pill');
     const skipRoutineBtn = document.getElementById('skipRoutineBtn');
@@ -572,17 +620,24 @@
     let isInitialLoad = true;
     let currentSchedules = null;
     let tempAvatarBase64 = null;
+    let signupAvatarBase64 = null;
     let activityLogData = [];
     let selectedSnackPortion = "25g";
     let isSkipNextActive = false;
+    let currentUserUid = null;
 
-    // ── 1. AUTH STATE PERSISTENCE ─────────────────────────────────
+    const defaultAvatarUrl = "https://cdn-icons-png.flaticon.com/512/1077/1077063.png";
+
+    // ── 1. AUTH STATE PERSISTENCE & CLOUD PROFILE SYNC ────────────
     auth.onAuthStateChanged((user) => {
       if (user) {
+        currentUserUid = user.uid;
         userEmailTag.textContent = user.email;
         authContainer.classList.add('hidden');
         appContainer.classList.remove('hidden');
-        loadCatProfile();
+
+        // I-load ang user-specific profile galing Firebase Realtime Database
+        loadCloudCatProfile(user.uid);
         loadSettingsPreferences();
         checkMidnightReset();
 
@@ -590,28 +645,46 @@
           splashScreen.classList.add('splash-hidden');
         }, 1200);
       } else {
+        currentUserUid = null;
         splashScreen.classList.add('splash-hidden');
         appContainer.classList.add('hidden');
         authContainer.classList.remove('hidden');
       }
     });
 
+    // Preview photo on Sign up form
+    signupPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          signupAvatarBase64 = event.target.result;
+          signupAvatarPreview.src = signupAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Toggle Mode (Log In vs Sign Up Setup)
     toggleAuthModeBtn.addEventListener('click', () => {
       isSigningUp = !isSigningUp;
       authError.classList.add('hidden');
       if (isSigningUp) {
-        authTitle.textContent = 'Create an Account';
-        authSubtitle.textContent = 'Sign up to connect your smart cat feeder';
-        authSubmitBtn.textContent = 'Sign Up';
+        authTitle.textContent = 'Create Feeder Account';
+        authSubtitle.textContent = 'Set up your cat profile and daily targets';
+        authSubmitBtn.textContent = 'Complete Sign Up & Save Profile';
         toggleAuthModeBtn.textContent = 'Already have an account? Log In';
+        signupExtraFields.classList.remove('hidden');
       } else {
         authTitle.textContent = 'Welcome to MeowMunch';
         authSubtitle.textContent = 'Log in to manage your smart pet feeder';
         authSubmitBtn.textContent = 'Log In';
-        toggleAuthModeBtn.textContent = "Don't have an account? Sign Up";
+        toggleAuthModeBtn.textContent = "Don't have an account? Sign Up & Setup Cat Profile";
+        signupExtraFields.classList.add('hidden');
       }
     });
 
+    // Auth Submission Handler
     authForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
@@ -622,11 +695,24 @@
 
       if (isSigningUp) {
         auth.createUserWithEmailAndPassword(email, password)
+          .then((cred) => {
+            const userProfile = {
+              avatar: signupAvatarBase64 || defaultAvatarUrl,
+              name: signupCatName.value.trim() || "My Cat",
+              targetMeals: signupTargetMeals.value || "3",
+              targetGrams: signupTargetGrams.value.trim() || "75g"
+            };
+
+            // I-save diretso sa Cloud Database ng account
+            return db.ref(`/users/${cred.user.uid}/profile`).set(userProfile).then(() => {
+              renderProfileUI(userProfile);
+            });
+          })
           .catch((err) => {
             authError.textContent = err.message;
             authError.classList.remove('hidden');
             authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = 'Sign Up';
+            authSubmitBtn.textContent = 'Complete Sign Up & Save Profile';
           });
       } else {
         auth.signInWithEmailAndPassword(email, password)
@@ -648,7 +734,74 @@
       }
     });
 
-    // ── 2. PORTION SELECTION PILLS ────────────────────────────────
+    // ── 2. CLOUD CAT PROFILE HANDLERS ─────────────────────────────
+    function renderProfileUI(profile) {
+      const avatar = profile.avatar || defaultAvatarUrl;
+      const name = profile.name || "My Cat";
+      const targetMeals = profile.targetMeals || "3";
+      const targetGrams = profile.targetGrams || "75g";
+
+      profileAvatarDisplay.src = avatar;
+      profileNameDisplay.textContent = name;
+      profileGoalTag.textContent = `Goal: ${targetMeals} Meals`;
+      profileGramsDisplay.textContent = `${targetGrams} daily kibble target`;
+
+      modalAvatarPreview.src = avatar;
+      modalCatName.value = name;
+      modalTargetMeals.value = targetMeals;
+      modalTargetGrams.value = targetGrams;
+    }
+
+    function loadCloudCatProfile(uid) {
+      db.ref(`/users/${uid}/profile`).on('value', (snap) => {
+        const profile = snap.val();
+        if (profile) {
+          renderProfileUI(profile);
+        }
+      });
+    }
+
+    openEditModalBtn.addEventListener('click', () => {
+      profileModal.classList.remove('hidden');
+    });
+
+    closeProfileModalBtn.addEventListener('click', () => {
+      profileModal.classList.add('hidden');
+    });
+
+    modalPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          tempAvatarBase64 = event.target.result;
+          modalAvatarPreview.src = tempAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    profileEditForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentUserUid) return;
+
+      const currentAvatar = tempAvatarBase64 || profileAvatarDisplay.src;
+      const updatedProfile = {
+        avatar: currentAvatar,
+        name: modalCatName.value.trim() || "My Cat",
+        targetMeals: modalTargetMeals.value,
+        targetGrams: modalTargetGrams.value.trim() || "75g"
+      };
+
+      db.ref(`/users/${currentUserUid}/profile`).set(updatedProfile).then(() => {
+        renderProfileUI(updatedProfile);
+        profileModal.classList.add('hidden');
+        addLog(`Updated profile details for ${updatedProfile.name}`);
+        playActiveSound();
+      });
+    });
+
+    // ── 3. PORTION SELECTION PILLS ────────────────────────────────
     portionPills.forEach(pill => {
       pill.addEventListener('click', () => {
         portionPills.forEach(p => {
@@ -659,7 +812,7 @@
       });
     });
 
-    // ── 3. SKIP NEXT ROUTINE BUTTON LOGIC ─────────────────────────
+    // ── 4. SKIP NEXT ROUTINE BUTTON LOGIC ─────────────────────────
     skipRoutineBtn.addEventListener('click', () => {
       isSkipNextActive = !isSkipNextActive;
       if (isSkipNextActive) {
@@ -674,7 +827,7 @@
       updateNextMealCountdown();
     });
 
-    // ── 4. SETTINGS PREFERENCES & AUDIO SYNTHESIZERS ──────────────
+    // ── 5. SETTINGS PREFERENCES & AUDIO SYNTHESIZERS ──────────────
     function loadSettingsPreferences() {
       const sound = localStorage.getItem('meowMunch_sound') || 'chime';
       const duration = localStorage.getItem('meowMunch_motorDuration') || '2.0';
@@ -795,65 +948,6 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    });
-
-    // ── 5. CAT PROFILE LOGIC ──────────────────────────────────────
-    function loadCatProfile() {
-      const defaultAvatar = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80";
-      const profile = JSON.parse(localStorage.getItem('meowMunch_profile') || '{}');
-
-      const avatar = profile.avatar || defaultAvatar;
-      const name = profile.name || "Mochi";
-      const targetMeals = profile.targetMeals || "3";
-      const targetGrams = profile.targetGrams || "75g";
-
-      profileAvatarDisplay.src = avatar;
-      profileNameDisplay.textContent = name;
-      profileGoalTag.textContent = `Goal: ${targetMeals} Meals`;
-      profileGramsDisplay.textContent = `${targetGrams} daily kibble target`;
-
-      modalAvatarPreview.src = avatar;
-      modalCatName.value = name;
-      modalTargetMeals.value = targetMeals;
-      modalTargetGrams.value = targetGrams;
-    }
-
-    openEditModalBtn.addEventListener('click', () => {
-      loadCatProfile();
-      profileModal.classList.remove('hidden');
-    });
-
-    closeProfileModalBtn.addEventListener('click', () => {
-      profileModal.classList.add('hidden');
-    });
-
-    modalPhotoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          tempAvatarBase64 = event.target.result;
-          modalAvatarPreview.src = tempAvatarBase64;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    profileEditForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const currentAvatar = tempAvatarBase64 || profileAvatarDisplay.src;
-      const newProfile = {
-        avatar: currentAvatar,
-        name: modalCatName.value.trim() || "Mochi",
-        targetMeals: modalTargetMeals.value,
-        targetGrams: modalTargetGrams.value.trim() || "75g"
-      };
-
-      localStorage.setItem('meowMunch_profile', JSON.stringify(newProfile));
-      loadCatProfile();
-      profileModal.classList.add('hidden');
-      addLog(`Updated profile details for ${newProfile.name}`);
-      playActiveSound();
     });
 
     // ── 6. MIDNIGHT AUTO-RESET ────────────────────────────────────
