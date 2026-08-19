@@ -2,8 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MeowMunch — Smart Cat Feeder</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#E07A5F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MeowMunch" />
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/616/616430.png" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,8 +23,16 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
+    body { font-family: 'Quicksand', sans-serif; -webkit-tap-highlight-color: transparent; }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translate(-50%, 8px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    #toast { animation: toast-in 0.2s ease-out; }
+    .live-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
   </style>
 </head>
@@ -23,7 +40,7 @@
 
   <main class="w-full max-w-md space-y-4">
 
-    <!-- Header Section with MeowMunch Branding -->
+    <!-- Header Section -->
     <header class="flex justify-between items-center bg-white/90 backdrop-blur-sm border border-stone-200/80 p-4 rounded-3xl shadow-sm">
       <div class="space-y-0.5">
         <h1 class="text-xl font-bold text-stone-800 tracking-tight">MeowMunch</h1>
@@ -35,6 +52,35 @@
         <span class="text-xs font-bold text-emerald-700">Online</span>
       </div>
     </header>
+
+    <!-- Cat Profile Card with Edit Button -->
+    <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm flex items-center justify-between">
+      <div class="flex items-center space-x-3.5">
+        <img 
+          id="profileAvatarDisplay" 
+          src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80" 
+          alt="Cat Avatar" 
+          class="w-14 h-14 rounded-2xl object-cover border-2 border-stone-100 shadow-2xs"
+        />
+        <div class="space-y-1">
+          <div class="flex items-center space-x-2">
+            <h2 id="profileNameDisplay" class="text-sm font-bold text-stone-800">Mochi</h2>
+            <span id="profileGoalTag" class="text-[10px] font-bold px-2 py-0.5 bg-[#FAF7F2] text-stone-500 rounded-full border border-stone-200/60">
+              Goal: 3 Meals
+            </span>
+          </div>
+          <p id="profileGramsDisplay" class="text-[11px] font-semibold text-stone-400">75g daily kibble target</p>
+        </div>
+      </div>
+
+      <button 
+        id="openEditModalBtn"
+        type="button"
+        class="py-1.5 px-3 bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-600 font-bold text-xs rounded-xl transition duration-150 cursor-pointer border border-stone-200"
+      >
+        Edit Profile
+      </button>
+    </section>
 
     <!-- Next Routine Countdown Banner -->
     <section class="bg-[#EEF4F8] border border-[#D5E3EC] p-3.5 rounded-3xl shadow-sm flex items-center justify-between">
@@ -209,7 +255,60 @@
 
   </main>
 
+  <!-- EDIT PROFILE MODAL DIALOG -->
+  <div id="profileModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="text-sm font-bold text-stone-800">Edit Cat Profile</h3>
+        <button id="closeProfileModalBtn" type="button" class="text-stone-400 hover:text-stone-600 font-bold text-sm cursor-pointer">✕</button>
+      </div>
+
+      <form id="profileEditForm" class="space-y-3.5">
+        <div class="flex items-center space-x-3">
+          <img id="modalAvatarPreview" src="" alt="Preview" class="w-12 h-12 rounded-2xl object-cover border border-stone-200 shadow-2xs" />
+          <div class="flex-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">Cat Photo</label>
+            <input type="file" id="modalPhotoInput" accept="image/*" class="text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-stone-100 file:text-stone-700 hover:file:bg-stone-200 cursor-pointer" />
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label for="modalCatName" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat's Name</label>
+          <input type="text" id="modalCatName" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. Mochi" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-1">
+            <label for="modalTargetMeals" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Target Meals</label>
+            <select id="modalTargetMeals" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-2.5 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+              <option value="2">2 Meals / day</option>
+              <option value="3" selected>3 Meals / day</option>
+              <option value="4">4 Meals / day</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label for="modalTargetGrams" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Daily Grams</label>
+            <input type="text" id="modalTargetGrams" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. 75g" />
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-[#81B29A] hover:bg-[#72A28A] active:scale-[0.99] text-white font-bold text-xs rounded-xl transition duration-150 shadow-sm cursor-pointer mt-2">
+          Save Cat Profile
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // ── 0. PWA Service Worker Registration ────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('PWA Service Worker registered:', reg.scope))
+          .catch((err) => console.warn('PWA Service Worker failed:', err));
+      });
+    }
+
     const firebaseConfig = {
       apiKey: "AIzaSyDO9TUMbgYtyo4Np1qEqYOCygHbhfDjFzY",
       authDomain: "meowmunch-iot.firebaseapp.com",
@@ -224,7 +323,22 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // DOM Elements
+    // DOM Profile Elements
+    const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
+    const profileNameDisplay = document.getElementById('profileNameDisplay');
+    const profileGoalTag = document.getElementById('profileGoalTag');
+    const profileGramsDisplay = document.getElementById('profileGramsDisplay');
+    const openEditModalBtn = document.getElementById('openEditModalBtn');
+    const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+    const profileModal = document.getElementById('profileModal');
+    const profileEditForm = document.getElementById('profileEditForm');
+    const modalAvatarPreview = document.getElementById('modalAvatarPreview');
+    const modalPhotoInput = document.getElementById('modalPhotoInput');
+    const modalCatName = document.getElementById('modalCatName');
+    const modalTargetMeals = document.getElementById('modalTargetMeals');
+    const modalTargetGrams = document.getElementById('modalTargetGrams');
+
+    // General App DOM Elements
     const enableNotifBtn = document.getElementById('enableNotifBtn');
     const manualBtn = document.getElementById('manualFeedBtn');
     const saveBtn = document.getElementById('saveScheduleBtn');
@@ -238,8 +352,79 @@
 
     let isInitialLoad = true;
     let currentSchedules = null;
+    let tempAvatarBase64 = null;
 
-    // ── Web Audio API Synthesizer ─────────────────────────────────
+    function loadCatProfile() {
+      const defaultAvatar = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&auto=format&fit=crop&q=80";
+      const profile = JSON.parse(localStorage.getItem('meowMunch_profile') || '{}');
+
+      const avatar = profile.avatar || defaultAvatar;
+      const name = profile.name || "Mochi";
+      const targetMeals = profile.targetMeals || "3";
+      const targetGrams = profile.targetGrams || "75g";
+
+      profileAvatarDisplay.src = avatar;
+      profileNameDisplay.textContent = name;
+      profileGoalTag.textContent = `Goal: ${targetMeals} Meals`;
+      profileGramsDisplay.textContent = `${targetGrams} daily kibble target`;
+
+      modalAvatarPreview.src = avatar;
+      modalCatName.value = name;
+      modalTargetMeals.value = targetMeals;
+      modalTargetGrams.value = targetGrams;
+    }
+
+    openEditModalBtn.addEventListener('click', () => {
+      loadCatProfile();
+      profileModal.classList.remove('hidden');
+    });
+
+    closeProfileModalBtn.addEventListener('click', () => {
+      profileModal.classList.add('hidden');
+    });
+
+    modalPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          tempAvatarBase64 = event.target.result;
+          modalAvatarPreview.src = tempAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    profileEditForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const currentAvatar = tempAvatarBase64 || profileAvatarDisplay.src;
+      const newProfile = {
+        avatar: currentAvatar,
+        name: modalCatName.value.trim() || "Mochi",
+        targetMeals: modalTargetMeals.value,
+        targetGrams: modalTargetGrams.value.trim() || "75g"
+      };
+
+      localStorage.setItem('meowMunch_profile', JSON.stringify(newProfile));
+      loadCatProfile();
+      profileModal.classList.add('hidden');
+      addLog(`Updated profile details for ${newProfile.name}`);
+      playGentleChime();
+    });
+
+    function checkMidnightReset() {
+      const todayDate = new Date().toISOString().split('T')[0];
+      const lastResetDate = localStorage.getItem('meowMunch_lastResetDate');
+
+      if (lastResetDate && lastResetDate !== todayDate) {
+        db.ref('/logs/today_count').set(0);
+        addLog('Daily meal counter reset for new day (12:00 AM)');
+      }
+      localStorage.setItem('meowMunch_lastResetDate', todayDate);
+    }
+
+    setInterval(checkMidnightReset, 60000);
+
     function playGentleChime() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -250,17 +435,13 @@
         frequencies.forEach((freq, index) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
-
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, now + (index * 0.08));
-
           gain.gain.setValueAtTime(0, now + (index * 0.08));
           gain.gain.linearRampToValueAtTime(0.15, now + (index * 0.08) + 0.03);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + (index * 0.08) + 0.9);
-
           osc.connect(gain);
           gain.connect(ctx.destination);
-
           osc.start(now + (index * 0.08));
           osc.stop(now + (index * 0.08) + 1.0);
         });
@@ -299,13 +480,11 @@
       logList.prepend(li);
     }
 
-    // Clear History Button Action
     clearLogsBtn.addEventListener('click', () => {
       logList.innerHTML = '';
       addLog('Activity history cleared');
     });
 
-    // ── Next Meal Countdown Calculator ────────────────────────────
     function updateNextMealCountdown() {
       if (!currentSchedules) return;
 
@@ -331,10 +510,7 @@
         mealDate.setHours(h, m, 0, 0);
 
         let diff = mealDate.getTime() - now.getTime();
-        // Kung tapos na ngayong araw, ilipat bukas
-        if (diff <= 0) {
-          diff += 24 * 60 * 60 * 1000;
-        }
+        if (diff <= 0) diff += 24 * 60 * 60 * 1000;
 
         if (diff < minDiffMs) {
           minDiffMs = diff;
@@ -348,23 +524,18 @@
         const mins = totalMinutes % 60;
 
         nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime})`;
-        if (hours > 0) {
-          countdownBadge.textContent = `in ${hours}h ${mins}m`;
-        } else {
-          countdownBadge.textContent = `in ${mins}m`;
-        }
+        countdownBadge.textContent = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
       }
     }
 
-    setInterval(updateNextMealCountdown, 30000); // Re-calculate every 30s
+    setInterval(updateNextMealCountdown, 30000);
 
-    // ── 1. Firebase Listeners ────────────────────────────────────
     db.ref('/logs/last_fed').on('value', (snap) => {
       const val = snap.val();
       if (val) {
         lastFedDisplay.textContent = val;
         if (!isInitialLoad) {
-          triggerNotification('MeowMunch Alert', `Cat kibble dispensed at ${val}!`);
+          triggerNotification('MeowMunch Alert', `${profileNameDisplay.textContent}'s meal was dispensed at ${val}!`);
           addLog('Meal dispensed successfully', val);
         }
       }
@@ -399,7 +570,6 @@
       }
     });
 
-    // ── 2. Manual Feed Trigger ───────────────────────────────────
     manualBtn.addEventListener('click', () => {
       manualBtn.disabled = true;
       manualBtn.textContent = 'Dispensing Snack...';
@@ -407,14 +577,11 @@
       playGentleChime();
       const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      db.ref('/logs/today_count').transaction((currentCount) => {
-        return (currentCount || 0) + 1;
-      });
-
+      db.ref('/logs/today_count').transaction((currentCount) => (currentCount || 0) + 1);
       db.ref('/logs/last_fed').set(currentTimeStr);
 
       db.ref('/feeder_config').update({ manual_trigger: true }).then(() => {
-        addLog('Manual snack dispensed', currentTimeStr);
+        addLog(`Snack dispensed for ${profileNameDisplay.textContent}`, currentTimeStr);
         setTimeout(() => {
           manualBtn.disabled = false;
           manualBtn.textContent = 'Feed Now';
@@ -422,7 +589,6 @@
       });
     });
 
-    // ── 3. Schedule Form Submit ──────────────────────────────────
     scheduleForm.addEventListener('submit', (e) => {
       e.preventDefault();
       saveBtn.disabled = true;
@@ -455,6 +621,11 @@
         playGentleChime();
         alert('Meal schedules successfully updated!');
       });
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCatProfile();
+      checkMidnightReset();
     });
   </script>
 </body>
