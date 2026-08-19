@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Feeder Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-[#FBF8F5] text-stone-700 min-h-screen p-4 sm:p-8 flex justify-center items-start">
+
+  <main class="w-full max-w-md space-y-4">
+
+    <!-- Cozy Top Bar -->
+    <header class="flex justify-between items-center bg-white/90 backdrop-blur-sm border border-stone-200/80 p-4 rounded-3xl shadow-sm">
+      <div class="space-y-0.5">
+        <h1 class="text-lg font-bold text-stone-800 tracking-tight">Smart Pet Feeder</h1>
+        <p class="text-[11px] font-semibold text-stone-400">Automatic Feeding Routine</p>
+      </div>
+
+      <div class="flex items-center space-x-2 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-bold text-emerald-700">Online</span>
+      </div>
+    </header>
+
+    <!-- Quick Status Cards -->
+    <section class="grid grid-cols-2 gap-3">
+      <div class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Last Meal Time</span>
+        <p id="lastFedDisplay" class="text-sm font-bold text-stone-800">Not yet recorded</p>
+      </div>
+
+      <div class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Meals Today</span>
+        <p id="feedCountDisplay" class="text-sm font-bold text-stone-800">0 bowls served</p>
+      </div>
+    </section>
+
+    <!-- Instant Feed Action -->
+    <section class="bg-[#FFF4EE] border border-[#FFE2D4] p-4.5 rounded-3xl shadow-sm flex items-center justify-between">
+      <div class="space-y-0.5">
+        <h2 class="text-xs font-bold text-[#D96B43]">Extra Snack</h2>
+        <p class="text-[11px] text-stone-500 font-medium">Dispense one standard portion</p>
+      </div>
+      <button 
+        id="manualFeedBtn"
+        type="button"
+        class="py-2.5 px-4 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-95 text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer"
+      >
+        Feed Now
+      </button>
+    </section>
+
+    <!-- Feeding Schedule (3 Slots) -->
+    <section class="bg-white border border-stone-200/70 p-5 rounded-3xl shadow-sm space-y-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400">Daily Meal Schedule</h2>
+          <p class="text-xs font-bold text-stone-800 mt-0.5">3 Meal Slots Available</p>
+        </div>
+      </div>
+
+      <form id="scheduleForm" class="space-y-3">
+        
+        <!-- Slot 1 -->
+        <div class="p-3.5 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-stone-700">Breakfast Routine</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="slot1Active" checked class="sr-only peer" />
+              <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <input 
+              type="time" 
+              id="slot1Time" 
+              value="07:30" 
+              class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+            />
+            <select id="slot1Portion" class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+              <option value="15g">15 grams</option>
+              <option value="25g" selected>25 grams</option>
+              <option value="35g">35 grams</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Slot 2 -->
+        <div class="p-3.5 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-stone-700">Lunch Routine</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="slot2Active" checked class="sr-only peer" />
+              <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <input 
+              type="time" 
+              id="slot2Time" 
+              value="12:30" 
+              class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+            />
+            <select id="slot2Portion" class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+              <option value="15g">15 grams</option>
+              <option value="25g" selected>25 grams</option>
+              <option value="35g">35 grams</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Slot 3 -->
+        <div class="p-3.5 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-stone-700">Dinner Routine</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="slot3Active" checked class="sr-only peer" />
+              <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <input 
+              type="time" 
+              id="slot3Time" 
+              value="18:30" 
+              class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+            />
+            <select id="slot3Portion" class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+              <option value="15g">15 grams</option>
+              <option value="25g" selected>25 grams</option>
+              <option value="35g">35 grams</option>
+            </select>
+          </div>
+        </div>
+
+        <button 
+          type="submit"
+          class="w-full py-3 bg-[#3D405B] hover:bg-[#32354B] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 cursor-pointer shadow-sm mt-2"
+        >
+          Save Schedule Settings
+        </button>
+      </form>
+    </section>
+
+    <!-- Activity Log -->
+    <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-2.5">
+      <div class="flex justify-between items-center">
+        <h3 class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Activity History</h3>
+        <span class="text-[10px] font-semibold text-stone-400">Local Cache</span>
+      </div>
+      <ul id="logList" class="space-y-1.5 text-xs text-stone-600">
+        <li class="p-2.5 bg-[#FAF7F2] rounded-xl flex justify-between items-center">
+          <span class="font-semibold text-stone-700">Feeder ready</span>
+          <span class="text-[10px] text-stone-400 font-bold">Ready</span>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script>
+    const manualBtn = document.getElementById('manualFeedBtn');
+    const lastFedDisplay = document.getElementById('lastFedDisplay');
+    const feedCountDisplay = document.getElementById('feedCountDisplay');
+    const scheduleForm = document.getElementById('scheduleForm');
+    const logList = document.getElementById('logList');
+
+    let feedCount = 0;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = JSON.parse(localStorage.getItem('cozyFeederData') || '{}');
+      if (saved.lastFed) lastFedDisplay.textContent = saved.lastFed;
+      if (saved.feedCount) {
+        feedCount = saved.feedCount;
+        feedCountDisplay.textContent = `${feedCount} bowls served`;
+      }
+      if (saved.schedules) {
+        if (saved.schedules.slot1) {
+          document.getElementById('slot1Time').value = saved.schedules.slot1.time;
+          document.getElementById('slot1Portion').value = saved.schedules.slot1.portion;
+          document.getElementById('slot1Active').checked = saved.schedules.slot1.enabled;
+        }
+        if (saved.schedules.slot2) {
+          document.getElementById('slot2Time').value = saved.schedules.slot2.time;
+          document.getElementById('slot2Portion').value = saved.schedules.slot2.portion;
+          document.getElementById('slot2Active').checked = saved.schedules.slot2.enabled;
+        }
+        if (saved.schedules.slot3) {
+          document.getElementById('slot3Time').value = saved.schedules.slot3.time;
+          document.getElementById('slot3Portion').value = saved.schedules.slot3.portion;
+          document.getElementById('slot3Active').checked = saved.schedules.slot3.enabled;
+        }
+      }
+    });
+
+    function addLog(action) {
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const li = document.createElement('li');
+      li.className = 'p-2.5 bg-[#FAF7F2] rounded-xl flex justify-between items-center';
+      li.innerHTML = `<span class="font-semibold text-stone-700">${action}</span><span class="text-[10px] text-stone-400 font-bold">${time}</span>`;
+      logList.prepend(li);
+    }
+
+    manualBtn.addEventListener('click', () => {
+      manualBtn.disabled = true;
+      manualBtn.classList.add('opacity-70');
+      manualBtn.textContent = 'Dispensing...';
+
+      setTimeout(() => {
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        lastFedDisplay.textContent = `${time}`;
+        
+        feedCount++;
+        feedCountDisplay.textContent = `${feedCount} bowls served`;
+
+        addLog('Manual snack dispensed');
+
+        const saved = JSON.parse(localStorage.getItem('cozyFeederData') || '{}');
+        saved.lastFed = time;
+        saved.feedCount = feedCount;
+        localStorage.setItem('cozyFeederData', JSON.stringify(saved));
+
+        manualBtn.disabled = false;
+        manualBtn.classList.remove('opacity-70');
+        manualBtn.textContent = 'Feed Now';
+      }, 1000);
+    });
+
+    scheduleForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const payload = {
+        slot1: {
+          time: document.getElementById('slot1Time').value,
+          portion: document.getElementById('slot1Portion').value,
+          enabled: document.getElementById('slot1Active').checked
+        },
+        slot2: {
+          time: document.getElementById('slot2Time').value,
+          portion: document.getElementById('slot2Portion').value,
+          enabled: document.getElementById('slot2Active').checked
+        },
+        slot3: {
+          time: document.getElementById('slot3Time').value,
+          portion: document.getElementById('slot3Portion').value,
+          enabled: document.getElementById('slot3Active').checked
+        }
+      };
+
+      const saved = JSON.parse(localStorage.getItem('cozyFeederData') || '{}');
+      saved.schedules = payload;
+      localStorage.setItem('cozyFeederData', JSON.stringify(saved));
+
+      addLog('Schedule updated');
+      alert('Schedules saved successfully!');
+    });
+  </script>
+</body>
+</html>
