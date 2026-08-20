@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>MeowMunch — Smart Cat Feeder</title>
+  <title>MeowMunch — Multi-Pet Smart Feeder</title>
   
-  <!-- PWA, Favicon & Mobile Meta Tags -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" />
   <meta name="theme-color" content="#E07A5F" />
@@ -15,107 +14,86 @@
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              terracotta: '#E07A5F',
+              sage: '#81B29A',
+              navy: '#3D405B',
+              bgLight: '#FBF8F5',
+              darkBg: '#1C1917',
+              darkSurface: '#292524',
+              darkBorder: '#44403C'
+            }
+          }
+        }
+      }
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
     body { font-family: 'Quicksand', sans-serif; -webkit-tap-highlight-color: transparent; }
-    
-    #splashScreen {
-      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s;
-    }
-    .splash-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
+    #splashScreen { transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s; }
+    .splash-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     @keyframes gentle-bounce {
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-6px) scale(1.04); }
     }
-    .splash-icon {
-      animation: gentle-bounce 1.6s ease-in-out infinite;
-    }
+    .splash-icon { animation: gentle-bounce 1.6s ease-in-out infinite; }
   </style>
 </head>
-<body class="bg-[#FBF8F5] text-stone-700 min-h-screen p-4 sm:p-8 flex justify-center items-start relative">
+<body class="bg-[#FBF8F5] dark:bg-[#1C1917] text-stone-700 dark:text-stone-200 min-h-screen p-4 sm:p-8 flex justify-center items-start relative transition-colors duration-200">
 
-  <!-- ── INTRO / SPLASH SCREEN OVERLAY ───────────────────────── -->
-  <div id="splashScreen" class="fixed inset-0 bg-[#FBF8F5] z-50 flex flex-col items-center justify-center p-6 text-center">
+  <!-- ── 1. INTRO / SPLASH SCREEN OVERLAY ───────────────────────── -->
+  <div id="splashScreen" class="fixed inset-0 bg-[#FBF8F5] dark:bg-[#1C1917] z-50 flex flex-col items-center justify-center p-6 text-center">
     <div class="space-y-4">
-      <div class="w-20 h-20 bg-white border border-stone-200/80 shadow-md rounded-3xl flex items-center justify-center mx-auto splash-icon p-4">
+      <div class="w-20 h-20 bg-white dark:bg-[#292524] border border-stone-200/80 dark:border-stone-700 shadow-md rounded-3xl flex items-center justify-center mx-auto splash-icon p-4">
         <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Cat Paw Icon" class="w-12 h-12 object-contain" />
       </div>
       <div class="space-y-1">
-        <h1 class="text-2xl font-bold text-stone-800 tracking-tight">MeowMunch</h1>
-        <p class="text-xs font-semibold text-stone-400">Preparing smart bowl & schedules…</p>
+        <h1 class="text-2xl font-bold text-stone-800 dark:text-stone-100 tracking-tight">MeowMunch</h1>
+        <p class="text-xs font-semibold text-stone-400">Loading pet profiles & feeders…</p>
       </div>
-      <div class="w-24 h-1.5 bg-stone-200/60 rounded-full mx-auto overflow-hidden">
+      <div class="w-24 h-1.5 bg-stone-200/60 dark:bg-stone-700 rounded-full mx-auto overflow-hidden">
         <div class="w-full h-full bg-[#E07A5F] rounded-full animate-pulse"></div>
       </div>
     </div>
   </div>
 
-  <!-- ── AUTHENTICATION CONTAINER (LOG IN / CUSTOM SIGN UP) ───── -->
-  <div id="authContainer" class="w-full max-w-md bg-white border border-stone-200/80 rounded-3xl p-6 shadow-sm space-y-5 hidden my-auto">
+  <!-- ── 2. AUTHENTICATION CONTAINER ──────────────────────────── -->
+  <div id="authContainer" class="w-full max-w-md bg-white dark:bg-[#292524] border border-stone-200/80 dark:border-stone-700 rounded-3xl p-6 shadow-sm space-y-5 hidden my-auto">
     <div class="text-center space-y-2">
-      <div class="w-14 h-14 bg-[#FAF7F2] border border-stone-200/70 rounded-2xl flex items-center justify-center mx-auto p-3 shadow-2xs">
+      <div class="w-14 h-14 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 rounded-2xl flex items-center justify-center mx-auto p-3 shadow-2xs">
         <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Paw" class="w-8 h-8 object-contain" />
       </div>
-      <h2 id="authTitle" class="text-lg font-bold text-stone-800 tracking-tight">Welcome to MeowMunch</h2>
+      <h2 id="authTitle" class="text-lg font-bold text-stone-800 dark:text-stone-100 tracking-tight">Welcome to MeowMunch</h2>
       <p id="authSubtitle" class="text-xs font-semibold text-stone-400">Log in to manage your smart pet feeder</p>
     </div>
 
-    <div id="authError" class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-xs font-bold text-center hidden"></div>
+    <div id="authError" class="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl text-rose-600 dark:text-rose-400 text-xs font-bold text-center leading-relaxed hidden"></div>
 
     <form id="authForm" class="space-y-3">
-      
-      <!-- Account Credentials -->
       <div class="space-y-1">
         <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Email Address</label>
-        <input type="email" id="authEmail" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="furparent@example.com" />
+        <input type="email" id="authEmail" required class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="furparent@example.com" />
       </div>
 
       <div class="space-y-1">
         <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Password</label>
-        <input type="password" id="authPassword" required minlength="6" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="••••••••" />
-      </div>
-
-      <!-- Sign Up Customization Fields (Hidden during Login) -->
-      <div id="signupExtraFields" class="space-y-3 border-t border-stone-100 pt-3 hidden">
-        <div class="flex items-center space-x-3">
-          <img id="signupAvatarPreview" src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Cat Preview" class="w-12 h-12 rounded-2xl object-cover border border-stone-200 bg-[#FAF7F2] p-1 shadow-2xs" />
-          <div class="flex-1">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">Cat Photo (Optional)</label>
-            <input type="file" id="signupPhotoInput" accept="image/*" class="text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-stone-100 file:text-stone-700 hover:file:bg-stone-200 cursor-pointer" />
-          </div>
-        </div>
-
-        <div class="space-y-1">
-          <label for="signupCatName" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat's Name</label>
-          <input type="text" id="signupCatName" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. Luna, Milo, Mochi" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div class="space-y-1">
-            <label for="signupTargetMeals" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Target Meals</label>
-            <select id="signupTargetMeals" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-2.5 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
-              <option value="2">2 Meals / day</option>
-              <option value="3" selected>3 Meals / day</option>
-              <option value="4">4 Meals / day</option>
-            </select>
-          </div>
-          <div class="space-y-1">
-            <label for="signupTargetGrams" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Daily Grams</label>
-            <input type="text" id="signupTargetGrams" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. 75g" value="75g" />
-          </div>
-        </div>
+        <input type="password" id="authPassword" required minlength="6" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3.5 py-2.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="••••••••" />
       </div>
 
       <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer mt-1">
@@ -123,74 +101,188 @@
       </button>
     </form>
 
-    <div class="text-center pt-1 border-t border-stone-100">
+    <div class="text-center pt-1 border-t border-stone-100 dark:border-stone-700/60">
       <button id="toggleAuthModeBtn" type="button" class="text-xs font-bold text-[#81B29A] hover:underline cursor-pointer">
-        Don't have an account? Sign Up & Setup Cat Profile
+        Don't have an account? Sign Up
       </button>
     </div>
   </div>
 
-  <!-- ── MAIN DASHBOARD APPLICATION ───────────────────────────── -->
+  <!-- ── 3. FIRST-TIME ONBOARDING SETUP MODAL ─────────────────── -->
+  <div id="onboardingModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 rounded-3xl w-full max-w-sm p-6 shadow-2xl space-y-4 overflow-hidden">
+      <div class="text-center space-y-1.5 border-b border-stone-100 dark:border-stone-700/60 pb-3">
+        <div class="w-12 h-12 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 rounded-2xl flex items-center justify-center mx-auto p-2.5 shadow-2xs">
+          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Paw" class="w-7 h-7 object-contain" />
+        </div>
+        <h3 class="text-base font-bold text-stone-800 dark:text-stone-100">Set Up First Cat Profile</h3>
+        <p class="text-xs text-stone-400 font-semibold">Customize your pet's feeding targets</p>
+      </div>
+
+      <form id="onboardingForm" class="space-y-3.5">
+        <div class="flex items-center space-x-3 p-2 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
+          <img 
+            id="onboardingAvatarPreview" 
+            src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" 
+            alt="Preview" 
+            class="w-14 h-14 shrink-0 rounded-xl object-cover border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-700 p-1 shadow-2xs" 
+          />
+          <div class="flex-1 min-w-0 space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat Photo</label>
+            <input 
+              type="file" 
+              id="onboardingPhotoInput" 
+              accept="image/*" 
+              class="w-full text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-white dark:file:bg-stone-700 file:text-stone-700 dark:file:text-stone-200 file:border file:border-stone-200 dark:file:border-stone-600 hover:file:bg-stone-50 cursor-pointer" 
+            />
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label for="onboardingCatName" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat's Name</label>
+          <input type="text" id="onboardingCatName" required class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. Luna, Milo, Mochi" />
+        </div>
+
+        <div class="space-y-1">
+          <label for="onboardingDeviceSelect" class="block text-[10px] font-bold uppercase tracking-wider text-[#E07A5F]">Linked Feeder Hardware</label>
+          <select id="onboardingDeviceSelect" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs">
+            <option value="feeder_01" selected>📡 Feeder Unit #1 (feeder_01)</option>
+            <option value="feeder_02">📡 Feeder Unit #2 (feeder_02)</option>
+            <option value="feeder_03">📡 Feeder Unit #3 (feeder_03)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label for="onboardingBirthdayInput" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Birthday or Adoption Date</label>
+          <input type="date" id="onboardingBirthdayInput" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="space-y-1">
+            <label for="onboardingTargetMeals" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Daily Meals</label>
+            <select id="onboardingTargetMeals" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-2.5 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+              <option value="2">2 Meals / day</option>
+              <option value="3" selected>3 Meals / day</option>
+              <option value="4">4 Meals / day</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label for="onboardingTargetGrams" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Daily Target</label>
+            <input type="text" id="onboardingTargetGrams" required class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. 75g" value="75g" />
+          </div>
+        </div>
+
+        <button type="submit" id="onboardingSubmitBtn" class="w-full py-3 bg-[#81B29A] hover:bg-[#72A28A] active:scale-[0.99] text-white font-bold text-xs rounded-xl transition duration-150 shadow-sm cursor-pointer mt-2">
+          Save & Enter Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── 4. MAIN DASHBOARD APPLICATION ────────────────────────── -->
   <main id="appContainer" class="w-full max-w-md space-y-4 hidden">
 
-    <!-- Header Section with SVG Logout & Settings -->
-    <header class="flex justify-between items-center bg-white/90 backdrop-blur-sm border border-stone-200/80 p-4 rounded-3xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-[#FAF7F2] border border-stone-200/70 rounded-2xl flex items-center justify-center p-2 shadow-2xs">
-          <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="App Paw Icon" class="w-6 h-6 object-contain" />
+    <!-- Header Section with Live Status & Hardware Indicator -->
+    <header class="bg-white/90 dark:bg-[#292524]/90 backdrop-blur-sm border border-stone-200/80 dark:border-stone-700 p-4 rounded-3xl shadow-sm space-y-3">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 rounded-2xl flex items-center justify-center p-2 shadow-2xs">
+            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="App Paw Icon" class="w-6 h-6 object-contain" />
+          </div>
+          <div class="space-y-0.5">
+            <h1 class="text-xl font-bold text-stone-800 dark:text-stone-100 tracking-tight">MeowMunch</h1>
+            <p id="userEmailTag" class="text-[10px] font-semibold text-stone-400">Logged in</p>
+          </div>
         </div>
-        <div class="space-y-0.5">
-          <h1 class="text-xl font-bold text-stone-800 tracking-tight">MeowMunch</h1>
-          <p id="userEmailTag" class="text-[10px] font-semibold text-stone-400">Logged in</p>
+
+        <div class="flex items-center space-x-2">
+          <button 
+            id="openSettingsBtn" 
+            type="button" 
+            title="Feeder Settings" 
+            class="p-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-95 text-stone-600 dark:text-stone-300 rounded-2xl transition cursor-pointer border border-stone-200 dark:border-stone-700"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </button>
+
+          <button 
+            id="logoutBtn" 
+            type="button" 
+            title="Sign out of device" 
+            class="p-2 bg-stone-100 dark:bg-stone-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 text-stone-500 rounded-2xl transition cursor-pointer border border-stone-200 dark:border-stone-700 flex items-center justify-center"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+          </button>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <div class="flex items-center space-x-1.5 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-[11px] font-bold text-emerald-700">Online</span>
+      <!-- Live Heartbeat & Linked Device Badge -->
+      <div class="flex items-center justify-between pt-2 border-t border-stone-100/80 dark:border-stone-700/60 text-[11px] font-bold">
+        <div id="heartbeatContainer" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 transition-all">
+          <span id="heartbeatDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="heartbeatText">Synced just now</span>
         </div>
-        
-        <!-- Settings Trigger Button -->
-        <button 
-          id="openSettingsBtn" 
-          type="button" 
-          title="App Settings" 
-          class="p-2 bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-600 rounded-2xl transition cursor-pointer border border-stone-200"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-        </button>
 
-        <!-- Professional SVG Logout Button (No Emoji) -->
-        <button 
-          id="logoutBtn" 
-          type="button" 
-          title="Sign out of device" 
-          class="p-2 bg-stone-100 hover:bg-rose-50 hover:text-rose-600 text-stone-500 rounded-2xl transition cursor-pointer border border-stone-200 flex items-center justify-center"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-        </button>
+        <div class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200/80 dark:border-stone-700">
+          <span>📡</span>
+          <span id="assignedDeviceLabel">feeder_01</span>
+        </div>
       </div>
     </header>
 
-    <!-- Cat Profile Card -->
-    <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm flex items-center justify-between">
+    <!-- Away Mode Active Banner -->
+    <div id="awayModeBanner" class="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-3xl flex items-center justify-between shadow-xs hidden">
+      <div class="flex items-center space-x-2.5">
+        <span class="text-base">✈️</span>
+        <div>
+          <h4 class="text-xs font-bold text-amber-800 dark:text-amber-300">Away Strict Mode Active</h4>
+          <p id="awayModeBannerSubtext" class="text-[10px] font-semibold text-amber-600 dark:text-amber-400/80">Manual snack taps are locked</p>
+        </div>
+      </div>
+      <span class="px-2 py-0.5 bg-amber-200/60 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 font-bold text-[10px] rounded-full">Active</span>
+    </div>
+
+    <!-- ── PET TABS SELECTOR (HORIZONTAL CAROUSEL) ─────────────── -->
+    <section class="space-y-2">
+      <div class="flex items-center justify-between px-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Pet Profiles</span>
+        <button id="addNewPetBtn" type="button" class="text-xs font-bold text-[#81B29A] hover:underline flex items-center space-x-1 cursor-pointer">
+          <span>+ Add Cat Profile</span>
+        </button>
+      </div>
+
+      <div id="petTabsContainer" class="flex space-x-2 overflow-x-auto no-scrollbar pb-1">
+        <!-- Rendered Tab Pills dynamically -->
+      </div>
+    </section>
+
+    <!-- Birthday / Adoption Countdown Banner -->
+    <div id="birthdayBanner" class="p-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 border border-amber-200/80 dark:border-amber-800/80 rounded-3xl flex items-center justify-between shadow-2xs">
+      <div class="flex items-center space-x-2.5">
+        <span class="text-base">🎂</span>
+        <span id="birthdayCountdownText" class="text-xs font-bold text-amber-900 dark:text-amber-200">Milestone</span>
+      </div>
+      <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-white/80 dark:bg-stone-800 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-700">Special</span>
+    </div>
+
+    <!-- Active Cat Profile Card -->
+    <section class="bg-white dark:bg-[#292524] border border-stone-200/70 dark:border-stone-700 p-4 rounded-3xl shadow-sm flex items-center justify-between">
       <div class="flex items-center space-x-3.5">
         <img 
           id="profileAvatarDisplay" 
           src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" 
           alt="Cat Avatar" 
-          class="w-14 h-14 rounded-2xl object-cover border-2 border-stone-100 shadow-2xs bg-[#FAF7F2]"
+          class="w-14 h-14 rounded-2xl object-cover border-2 border-stone-100 dark:border-stone-700 shadow-2xs bg-[#FAF7F2] dark:bg-stone-800"
         />
         <div class="space-y-1">
           <div class="flex items-center space-x-2">
-            <h2 id="profileNameDisplay" class="text-sm font-bold text-stone-800">My Cat</h2>
-            <span id="profileGoalTag" class="text-[10px] font-bold px-2 py-0.5 bg-[#FAF7F2] text-stone-500 rounded-full border border-stone-200/60">
+            <h2 id="profileNameDisplay" class="text-sm font-bold text-stone-800 dark:text-stone-100">My Cat</h2>
+            <span id="profileGoalTag" class="text-[10px] font-bold px-2 py-0.5 bg-[#FAF7F2] dark:bg-stone-800 text-stone-500 dark:text-stone-400 rounded-full border border-stone-200/60 dark:border-stone-700">
               Goal: 3 Meals
             </span>
           </div>
@@ -199,36 +291,35 @@
       </div>
 
       <button 
-        id="openEditModalBtn"
-        type="button"
-        class="py-1.5 px-3 bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-600 font-bold text-xs rounded-xl transition duration-150 cursor-pointer border border-stone-200"
+        id="openEditModalBtn" 
+        type="button" 
+        class="py-1.5 px-3 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-95 text-stone-600 dark:text-stone-300 font-bold text-xs rounded-xl transition duration-150 cursor-pointer border border-stone-200 dark:border-stone-700"
       >
-        Edit Profile
+        Edit Cat
       </button>
     </section>
 
     <!-- Next Routine Countdown Banner with Skip Button -->
-    <section class="bg-[#EEF4F8] border border-[#D5E3EC] p-3.5 rounded-3xl shadow-sm space-y-2">
+    <section class="bg-[#EEF4F8] dark:bg-stone-800/80 border border-[#D5E3EC] dark:border-stone-700 p-3.5 rounded-3xl shadow-sm space-y-2">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
           <span class="text-base">⏰</span>
           <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Upcoming Meal</span>
-            <p id="nextMealDisplay" class="text-xs font-bold text-[#3D405B]">Calculating next schedule...</p>
+            <p id="nextMealDisplay" class="text-xs font-bold text-[#3D405B] dark:text-stone-200">Calculating next schedule...</p>
           </div>
         </div>
-        <span id="countdownBadge" class="text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs">
+        <span id="countdownBadge" class="text-[11px] font-bold bg-white dark:bg-[#292524] text-[#3D405B] dark:text-stone-200 border border-stone-200 dark:border-stone-700 px-2.5 py-1 rounded-full shadow-2xs">
           --
         </span>
       </div>
 
-      <!-- Skip Next Routine Action -->
-      <div class="flex items-center justify-between pt-1.5 border-t border-[#D5E3EC]/60">
-        <span class="text-[11px] font-semibold text-stone-500">Skip this upcoming meal routine?</span>
+      <div class="flex items-center justify-between pt-1.5 border-t border-[#D5E3EC]/60 dark:border-stone-700/60">
+        <span class="text-[11px] font-semibold text-stone-500 dark:text-stone-400">Skip this upcoming meal routine?</span>
         <button 
           id="skipRoutineBtn" 
           type="button" 
-          class="px-2.5 py-1 bg-white hover:bg-stone-100 active:scale-95 text-[#E07A5F] border border-stone-200 font-bold text-[10px] rounded-xl transition cursor-pointer shadow-2xs"
+          class="px-2.5 py-1 bg-white dark:bg-[#292524] hover:bg-stone-100 dark:hover:bg-stone-700 active:scale-95 text-[#E07A5F] border border-stone-200 dark:border-stone-700 font-bold text-[10px] rounded-xl transition cursor-pointer shadow-2xs"
         >
           Skip Meal
         </button>
@@ -237,157 +328,158 @@
 
     <!-- Quick Status Cards -->
     <section class="grid grid-cols-2 gap-3">
-      <div class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-1">
+      <div class="bg-white dark:bg-[#292524] border border-stone-200/70 dark:border-stone-700 p-4 rounded-3xl shadow-sm space-y-1">
         <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Last Meal Time</span>
-        <p id="lastFedDisplay" class="text-sm font-bold text-stone-800">Never</p>
+        <p id="lastFedDisplay" class="text-sm font-bold text-stone-800 dark:text-stone-100">Never</p>
       </div>
 
-      <div class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-1">
+      <div class="bg-white dark:bg-[#292524] border border-stone-200/70 dark:border-stone-700 p-4 rounded-3xl shadow-sm space-y-1">
         <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Meals Today</span>
-        <p id="feedCountDisplay" class="text-sm font-bold text-stone-800">0 bowls served</p>
+        <p id="feedCountDisplay" class="text-sm font-bold text-stone-800 dark:text-stone-100">0 bowls served</p>
+      </div>
+    </section>
+
+    <!-- VET & PET CARE HEALTH REMINDERS -->
+    <section class="bg-white dark:bg-[#292524] border border-stone-200/70 dark:border-stone-700 rounded-3xl shadow-sm overflow-hidden">
+      <button 
+        id="toggleVetSectionBtn" 
+        type="button" 
+        class="w-full p-4 flex items-center justify-between hover:bg-stone-50/70 dark:hover:bg-stone-800/50 transition cursor-pointer"
+      >
+        <div class="flex items-center space-x-2.5">
+          <span class="text-base">🩺</span>
+          <div class="text-left">
+            <h3 class="text-xs font-bold text-stone-800 dark:text-stone-100">Vet & Care Reminders</h3>
+            <p class="text-[10px] font-semibold text-stone-400">Vaccines, Deworming & Weight Log</p>
+          </div>
+        </div>
+        <span id="vetToggleIcon" class="text-stone-400 font-bold text-xs transition-transform duration-200">▼</span>
+      </button>
+
+      <div id="vetContentContainer" class="p-4 pt-0 space-y-4 border-t border-stone-100 dark:border-stone-700/60 hidden">
+        <div class="grid grid-cols-2 gap-2.5 pt-3">
+          <div class="p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Deworming</span>
+              <span>💊</span>
+            </div>
+            <input 
+              type="date" 
+              id="dewormingDateInput" 
+              class="w-full bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-100 font-bold px-2 py-1 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+            />
+            <p id="dewormingBadge" class="text-[10px] font-bold text-stone-400">Not set</p>
+          </div>
+
+          <div class="p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Anti-Rabies / 4-in-1</span>
+              <span>💉</span>
+            </div>
+            <input 
+              type="date" 
+              id="vaccineDateInput" 
+              class="w-full bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-100 font-bold px-2 py-1 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+            />
+            <p id="vaccineBadge" class="text-[10px] font-bold text-stone-400">Not set</p>
+          </div>
+        </div>
+
+        <button 
+          id="saveVetDatesBtn" 
+          type="button" 
+          class="w-full py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-95 text-stone-700 dark:text-stone-200 font-bold text-xs rounded-xl transition border border-stone-200 dark:border-stone-700 cursor-pointer"
+        >
+          Save Care Dates
+        </button>
+
+        <div class="pt-3 border-t border-stone-100 dark:border-stone-700/60 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Weekly Weight Log (kg)</span>
+              <span class="text-xs">⚖️</span>
+            </div>
+            <span id="latestWeightDisplay" class="text-xs font-bold text-[#81B29A]">-- kg</span>
+          </div>
+
+          <div class="flex space-x-2">
+            <input 
+              type="number" 
+              step="0.01" 
+              min="0.1" 
+              max="25" 
+              id="weightInput" 
+              placeholder="e.g. 4.2" 
+              class="flex-1 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+            />
+            <button 
+              id="addWeightBtn" 
+              type="button" 
+              class="px-3.5 py-1.5 bg-[#81B29A] hover:bg-[#72A28A] text-white font-bold text-xs rounded-xl transition cursor-pointer"
+            >
+              + Log
+            </button>
+          </div>
+
+          <ul id="weightLogList" class="space-y-1 max-h-32 overflow-y-auto pr-1 text-xs"></ul>
+        </div>
+
       </div>
     </section>
 
     <!-- Instant Feed Action with Portion Selector Pills -->
-    <section class="bg-[#FFF4EE] border border-[#FFE2D4] p-4 rounded-3xl shadow-sm space-y-3">
+    <section id="manualFeedSection" class="bg-[#FFF4EE] dark:bg-stone-800/80 border border-[#FFE2D4] dark:border-stone-700 p-4 rounded-3xl shadow-sm space-y-3 transition-opacity">
       <div class="flex items-center justify-between">
         <div class="space-y-0.5">
-          <h2 class="text-xs font-bold text-[#D96B43]">Extra Snack</h2>
-          <p class="text-[11px] text-stone-500 font-medium">Select snack portion size</p>
+          <h2 class="text-xs font-bold text-[#D96B43]">Extra Snack (<span id="snackCatNameTag">Cat</span>)</h2>
+          <p id="snackSubtext" class="text-[11px] text-stone-500 dark:text-stone-400 font-medium">Triggers linked feeder motor</p>
         </div>
         <button 
-          id="manualFeedBtn"
-          type="button"
+          id="manualFeedBtn" 
+          type="button" 
           class="py-2 px-4 bg-[#E07A5F] hover:bg-[#D46B4E] active:scale-95 text-white font-bold text-xs rounded-2xl transition duration-150 shadow-sm cursor-pointer"
         >
           Feed Now
         </button>
       </div>
 
-      <!-- Quick Portion Pills -->
       <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-        <button 
-          type="button" 
-          data-portion="10g" 
-          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition cursor-pointer"
-        >
+        <button type="button" data-portion="10g" class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] dark:border-stone-700 bg-white dark:bg-[#292524] text-stone-600 dark:text-stone-300 transition cursor-pointer">
           10g Snack
         </button>
-        <button 
-          type="button" 
-          data-portion="25g" 
-          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition cursor-pointer"
-        >
+        <button type="button" data-portion="25g" class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition cursor-pointer">
           25g Portion
         </button>
-        <button 
-          type="button" 
-          data-portion="40g" 
-          class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition cursor-pointer"
-        >
+        <button type="button" data-portion="40g" class="portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] dark:border-stone-700 bg-white dark:bg-[#292524] text-stone-600 dark:text-stone-300 transition cursor-pointer">
           40g Big Treat
         </button>
       </div>
     </section>
 
-    <!-- Feeding Schedule (3 Slots) -->
-    <section class="bg-white border border-stone-200/70 p-5 rounded-3xl shadow-sm space-y-4">
+    <!-- Dynamic Feeding Schedule -->
+    <section class="bg-white dark:bg-[#292524] border border-stone-200/70 dark:border-stone-700 p-5 rounded-3xl shadow-sm space-y-4">
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400">Daily Meal Schedule</h2>
-          <p class="text-xs font-bold text-stone-800 mt-0.5">3 Meal Slots Available</p>
+          <p id="scheduleSlotsHeading" class="text-xs font-bold text-stone-800 dark:text-stone-100 mt-0.5">3 Meal Slots Configured</p>
         </div>
       </div>
 
       <form id="scheduleForm" class="space-y-3">
-        
-        <!-- Slot 1 -->
-        <div class="p-3.5 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-stone-700">Breakfast Routine</span>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="slot1Active" checked class="sr-only peer" />
-              <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
-            </label>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <input 
-              type="time" 
-              id="slot1Time" 
-              value="07:30" 
-              class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
-            />
-            <select id="slot1Portion" class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
-              <option value="15g">15 grams</option>
-              <option value="25g" selected>25 grams</option>
-              <option value="35g">35 grams</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Slot 2 -->
-        <div class="p-3.5 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-stone-700">Lunch Routine</span>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="slot2Active" checked class="sr-only peer" />
-              <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
-            </label>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <input 
-              type="time" 
-              id="slot2Time" 
-              value="12:30" 
-              class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
-            />
-            <select id="slot2Portion" class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
-              <option value="15g">15 grams</option>
-              <option value="25g" selected>25 grams</option>
-              <option value="35g">35 grams</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Slot 3 -->
-        <div class="p-3.5 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-stone-700">Dinner Routine</span>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="slot3Active" checked class="sr-only peer" />
-              <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
-            </label>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <input 
-              type="time" 
-              id="slot3Time" 
-              value="18:30" 
-              class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
-            />
-            <select id="slot3Portion" class="w-full bg-white border border-stone-200 text-stone-700 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
-              <option value="15g">15 grams</option>
-              <option value="25g" selected>25 grams</option>
-              <option value="35g">35 grams</option>
-            </select>
-          </div>
-        </div>
+        <div id="dynamicSlotsContainer" class="space-y-3"></div>
 
         <button 
           type="submit" 
           id="saveScheduleBtn" 
-          class="w-full py-3 bg-[#3D405B] hover:bg-[#32354B] active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 cursor-pointer shadow-sm mt-2"
+          class="w-full py-3 bg-[#3D405B] dark:bg-stone-700 hover:bg-[#32354B] dark:hover:bg-stone-600 active:scale-[0.99] text-white font-bold text-xs rounded-2xl transition duration-150 cursor-pointer shadow-sm mt-2"
         >
-          Save Schedule Settings
+          Save Schedule to Assigned Feeder
         </button>
       </form>
     </section>
 
-    <!-- Activity Log with Clear History Button -->
-    <section class="bg-white border border-stone-200/70 p-4 rounded-3xl shadow-sm space-y-2.5">
+    <!-- Activity Log -->
+    <section class="bg-white dark:bg-[#292524] border border-stone-200/70 dark:border-stone-700 p-4 rounded-3xl shadow-sm space-y-2.5">
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-1.5">
           <h3 class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Activity History</h3>
@@ -401,28 +493,87 @@
           Clear History
         </button>
       </div>
-      <ul id="logList" class="space-y-1.5 text-xs text-stone-600 max-h-48 overflow-y-auto pr-1"></ul>
+      <ul id="logList" class="space-y-1.5 text-xs text-stone-600 dark:text-stone-300 max-h-48 overflow-y-auto pr-1"></ul>
     </section>
 
   </main>
 
-  <!-- ── SETTINGS MODAL DIALOG ────────────────────────────────── -->
+  <!-- ── 5. COMPLETE SETTINGS MODAL DIALOG ─────────────────────── -->
   <div id="settingsModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
-      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+    <div class="bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-stone-100 dark:border-stone-700/60 pb-3">
         <div class="flex items-center space-x-2">
           <span class="text-base">⚙️</span>
-          <h3 class="text-sm font-bold text-stone-800">Feeder Settings</h3>
+          <h3 id="settingsModalHeading" class="text-sm font-bold text-stone-800 dark:text-stone-100">Feeder Settings</h3>
         </div>
-        <button id="closeSettingsModalBtn" type="button" class="text-stone-400 hover:text-stone-600 font-bold text-sm cursor-pointer">✕</button>
+        <button id="closeSettingsModalBtn" type="button" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 font-bold text-sm cursor-pointer">✕</button>
       </div>
 
       <div class="space-y-4 text-xs">
         
+        <!-- Warm Charcoal Dark Mode Toggle (Global) -->
+        <div class="flex items-center justify-between p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
+          <div class="space-y-0.5">
+            <span class="font-bold text-stone-800 dark:text-stone-100 text-xs">Warm Charcoal Dark Mode</span>
+            <p class="text-[10px] text-stone-400">Cozy theme gentle on the eyes</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="darkModeToggle" class="sr-only peer" />
+            <div class="w-9 h-5 bg-stone-200 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#E07A5F]"></div>
+          </label>
+        </div>
+
+        <!-- Vacation / Away Strict Mode (Per-Feeder) -->
+        <div class="flex items-center justify-between p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
+          <div class="space-y-0.5">
+            <span class="font-bold text-stone-800 dark:text-stone-100 text-xs">Vacation / Away Strict Mode</span>
+            <p class="text-[10px] text-stone-400">Locks manual snacks for this cat</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="awayModeToggle" class="sr-only peer" />
+            <div class="w-9 h-5 bg-stone-200 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+          </label>
+        </div>
+
+        <!-- Hardware Power Source Selector (Per-Feeder) -->
+        <div class="space-y-1.5 p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-stone-800 dark:text-stone-100 text-xs">Feeder Power Source</span>
+            <span id="settingsPowerSourceLabel" class="text-[11px] font-bold text-[#E07A5F]">Wall Outlet (AC)</span>
+          </div>
+          <select id="settingsPowerSelect" class="w-full bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+            <option value="ac">🔌 AC Wall Outlet (Primary Power)</option>
+            <option value="battery">🔋 Powerbank / Battery Backup</option>
+          </select>
+        </div>
+
+        <!-- Daily Feeding Frequency (Per-Pet Diet) -->
+        <div class="space-y-1.5 p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-stone-800 dark:text-stone-100 text-xs">Daily Feeding Frequency</span>
+            <span id="settingsMealsLabel" class="text-[11px] font-bold text-[#81B29A]">3 Meals</span>
+          </div>
+          <select id="settingsMealsSelect" class="w-full bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+            <option value="2">2 Meals (Breakfast, Dinner)</option>
+            <option value="3">3 Meals (Breakfast, Lunch, Dinner)</option>
+            <option value="4">4 Meals (Breakfast, Lunch, Afternoon, Dinner)</option>
+          </select>
+        </div>
+
+        <!-- Ping Hardware Test Button -->
+        <button 
+          id="sendManualPingBtn" 
+          type="button" 
+          class="w-full py-2 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer"
+        >
+          <span>📡</span>
+          <span>Send Test Ping Heartbeat</span>
+        </button>
+
         <!-- Sound Effect Selector -->
         <div class="space-y-1.5">
           <label for="soundEffectSelect" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Dispense Sound Effect</label>
-          <select id="soundEffectSelect" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+          <select id="soundEffectSelect" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
             <option value="chime">Gentle Bell Chime</option>
             <option value="meow">Cute Cat Meow (Synth)</option>
             <option value="mute">Mute / Silent</option>
@@ -433,24 +584,24 @@
         </div>
 
         <!-- Push Notifications Toggle -->
-        <div class="flex items-center justify-between p-3 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl">
+        <div class="flex items-center justify-between p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
           <div>
-            <span class="font-bold text-stone-800 text-xs">Browser Push Alerts</span>
+            <span class="font-bold text-stone-800 dark:text-stone-100 text-xs">Browser Push Alerts</span>
             <p class="text-[10px] text-stone-400 font-medium">Notify when feeding triggers</p>
           </div>
           <button 
             id="togglePushNotifBtn" 
             type="button" 
-            class="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 font-bold text-[10px] rounded-lg transition cursor-pointer"
+            class="px-2.5 py-1 bg-stone-200 dark:bg-stone-700 hover:bg-stone-300 dark:hover:bg-stone-600 font-bold text-[10px] rounded-lg transition cursor-pointer text-stone-800 dark:text-stone-200"
           >
             Enable
           </button>
         </div>
 
         <!-- Dispense Calibration Slider -->
-        <div class="space-y-1.5 p-3 bg-[#FAF7F2] border border-stone-200/60 rounded-2xl">
+        <div class="space-y-1.5 p-3 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-stone-800 text-xs">Motor Dispense Speed</span>
+            <span class="font-bold text-stone-800 dark:text-stone-100 text-xs">Motor Dispense Speed</span>
             <span id="motorDurationLabel" class="text-[11px] font-bold text-[#E07A5F]">2.0s</span>
           </div>
           <input 
@@ -462,14 +613,13 @@
             value="2.0" 
             class="w-full accent-[#E07A5F] cursor-pointer"
           />
-          <p class="text-[10px] text-stone-400">Controls how long the dispenser rotates.</p>
         </div>
 
         <!-- Export CSV Button -->
         <button 
           id="exportCsvBtn" 
           type="button" 
-          class="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer"
+          class="w-full py-2.5 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer border border-stone-200 dark:border-stone-700"
         >
           <span>📥</span>
           <span>Export Activity Logs (CSV)</span>
@@ -480,38 +630,53 @@
           type="button" 
           class="w-full py-2.5 bg-[#81B29A] hover:bg-[#72A28A] active:scale-[0.99] text-white font-bold rounded-xl transition shadow-sm cursor-pointer"
         >
-          Save Preferences
+          Save Preferences for This Cat
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ── EDIT PROFILE MODAL DIALOG ─────────────────────────────── -->
+  <!-- ── 6. EDIT / ADD PET PROFILE MODAL DIALOG ───────────────── -->
   <div id="profileModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-white border border-stone-200 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
-      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-        <h3 class="text-sm font-bold text-stone-800">Edit Cat Profile</h3>
-        <button id="closeProfileModalBtn" type="button" class="text-stone-400 hover:text-stone-600 font-bold text-sm cursor-pointer">✕</button>
+    <div class="bg-white dark:bg-[#292524] border border-stone-200 dark:border-stone-700 rounded-3xl w-full max-w-sm p-5 shadow-xl space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 dark:border-stone-700/60 pb-3">
+        <h3 id="modalTitleText" class="text-sm font-bold text-stone-800 dark:text-stone-100">Cat Profile</h3>
+        <button id="closeProfileModalBtn" type="button" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 font-bold text-sm cursor-pointer">✕</button>
       </div>
 
       <form id="profileEditForm" class="space-y-3.5">
-        <div class="flex items-center space-x-3">
-          <img id="modalAvatarPreview" src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Preview" class="w-12 h-12 rounded-2xl object-cover border border-stone-200 shadow-2xs bg-[#FAF7F2]" />
-          <div class="flex-1">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">Cat Photo</label>
-            <input type="file" id="modalPhotoInput" accept="image/*" class="text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-stone-100 file:text-stone-700 hover:file:bg-stone-200 cursor-pointer" />
+        <div class="flex items-center space-x-3 p-2 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl">
+          <img id="modalAvatarPreview" src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Avatar" class="w-14 h-14 shrink-0 rounded-xl object-cover border border-stone-200 dark:border-stone-700 shadow-2xs bg-white dark:bg-stone-700 p-1" />
+          <div class="flex-1 min-w-0 space-y-1">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat Photo</label>
+            <input type="file" id="modalPhotoInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-white dark:file:bg-stone-700 file:text-stone-700 dark:file:text-stone-200 file:border file:border-stone-200 dark:file:border-stone-600 hover:file:bg-stone-50 cursor-pointer" />
           </div>
         </div>
 
         <div class="space-y-1">
           <label for="modalCatName" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Cat's Name</label>
-          <input type="text" id="modalCatName" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. Mochi" />
+          <input type="text" id="modalCatName" required class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. Mochi" />
+        </div>
+
+        <!-- Linked Physical ESP32 Hardware Selector -->
+        <div class="space-y-1">
+          <label for="modalDeviceSelect" class="block text-[10px] font-bold uppercase tracking-wider text-[#E07A5F]">Linked Feeder Hardware</label>
+          <select id="modalDeviceSelect" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs">
+            <option value="feeder_01">📡 Feeder Unit #1 (feeder_01)</option>
+            <option value="feeder_02">📡 Feeder Unit #2 (feeder_02)</option>
+            <option value="feeder_03">📡 Feeder Unit #3 (feeder_03)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label for="modalBirthdayInput" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Birthday or Adoption Date</label>
+          <input type="date" id="modalBirthdayInput" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" />
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div class="space-y-1">
             <label for="modalTargetMeals" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Target Meals</label>
-            <select id="modalTargetMeals" class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-2.5 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+            <select id="modalTargetMeals" class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-2.5 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
               <option value="2">2 Meals / day</option>
               <option value="3" selected>3 Meals / day</option>
               <option value="4">4 Meals / day</option>
@@ -519,11 +684,11 @@
           </div>
           <div class="space-y-1">
             <label for="modalTargetGrams" class="block text-[10px] font-bold uppercase tracking-wider text-stone-400">Daily Grams</label>
-            <input type="text" id="modalTargetGrams" required class="w-full bg-[#FAF7F2] border border-stone-200 text-stone-800 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. 75g" />
+            <input type="text" id="modalTargetGrams" required class="w-full bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]" placeholder="e.g. 75g" />
           </div>
         </div>
 
-        <button type="submit" class="w-full py-2.5 bg-[#81B29A] hover:bg-[#72A28A] active:scale-[0.99] text-white font-bold text-xs rounded-xl transition duration-150 shadow-sm cursor-pointer mt-2">
+        <button type="submit" id="modalSubmitBtn" class="w-full py-2.5 bg-[#81B29A] hover:bg-[#72A28A] active:scale-[0.99] text-white font-bold text-xs rounded-xl transition duration-150 shadow-sm cursor-pointer mt-2">
           Save Cat Profile
         </button>
       </form>
@@ -531,7 +696,6 @@
   </div>
 
   <script>
-    // ── 0. PWA Service Worker Registration ────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -555,7 +719,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // DOM Elements - Splash & Auth
+    // DOM Elements - Auth & App
     const splashScreen = document.getElementById('splashScreen');
     const authContainer = document.getElementById('authContainer');
     const appContainer = document.getElementById('appContainer');
@@ -568,27 +732,25 @@
     const userEmailTag = document.getElementById('userEmailTag');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Sign Up Specific Inputs
-    const signupExtraFields = document.getElementById('signupExtraFields');
-    const signupPhotoInput = document.getElementById('signupPhotoInput');
-    const signupAvatarPreview = document.getElementById('signupAvatarPreview');
-    const signupCatName = document.getElementById('signupCatName');
-    const signupTargetMeals = document.getElementById('signupTargetMeals');
-    const signupTargetGrams = document.getElementById('signupTargetGrams');
+    // Onboarding Modal DOM
+    const onboardingModal = document.getElementById('onboardingModal');
+    const onboardingForm = document.getElementById('onboardingForm');
+    const onboardingPhotoInput = document.getElementById('onboardingPhotoInput');
+    const onboardingAvatarPreview = document.getElementById('onboardingAvatarPreview');
+    const onboardingCatName = document.getElementById('onboardingCatName');
+    const onboardingDeviceSelect = document.getElementById('onboardingDeviceSelect');
+    const onboardingBirthdayInput = document.getElementById('onboardingBirthdayInput');
+    const onboardingTargetMeals = document.getElementById('onboardingTargetMeals');
+    const onboardingTargetGrams = document.getElementById('onboardingTargetGrams');
+    const onboardingSubmitBtn = document.getElementById('onboardingSubmitBtn');
 
-    // Settings Modal DOM
-    const openSettingsBtn = document.getElementById('openSettingsBtn');
-    const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
-    const settingsModal = document.getElementById('settingsModal');
-    const soundEffectSelect = document.getElementById('soundEffectSelect');
-    const testSoundBtn = document.getElementById('testSoundBtn');
-    const togglePushNotifBtn = document.getElementById('togglePushNotifBtn');
-    const motorDurationRange = document.getElementById('motorDurationRange');
-    const motorDurationLabel = document.getElementById('motorDurationLabel');
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    // Multi-Pet Tabs & Birthday DOM
+    const petTabsContainer = document.getElementById('petTabsContainer');
+    const addNewPetBtn = document.getElementById('addNewPetBtn');
+    const birthdayBanner = document.getElementById('birthdayBanner');
+    const birthdayCountdownText = document.getElementById('birthdayCountdownText');
 
-    // Profile DOM Elements
+    // Profile & Modal Elements
     const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
     const profileNameDisplay = document.getElementById('profileNameDisplay');
     const profileGoalTag = document.getElementById('profileGoalTag');
@@ -597,13 +759,66 @@
     const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
     const profileModal = document.getElementById('profileModal');
     const profileEditForm = document.getElementById('profileEditForm');
+    const modalTitleText = document.getElementById('modalTitleText');
     const modalAvatarPreview = document.getElementById('modalAvatarPreview');
     const modalPhotoInput = document.getElementById('modalPhotoInput');
     const modalCatName = document.getElementById('modalCatName');
+    const modalDeviceSelect = document.getElementById('modalDeviceSelect');
+    const modalBirthdayInput = document.getElementById('modalBirthdayInput');
     const modalTargetMeals = document.getElementById('modalTargetMeals');
     const modalTargetGrams = document.getElementById('modalTargetGrams');
+    const modalSubmitBtn = document.getElementById('modalSubmitBtn');
+
+    // Heartbeat & Power Source Elements
+    const heartbeatContainer = document.getElementById('heartbeatContainer');
+    const heartbeatDot = document.getElementById('heartbeatDot');
+    const heartbeatText = document.getElementById('heartbeatText');
+    const assignedDeviceLabel = document.getElementById('assignedDeviceLabel');
+    const settingsPowerSelect = document.getElementById('settingsPowerSelect');
+    const settingsPowerSourceLabel = document.getElementById('settingsPowerSourceLabel');
+    const sendManualPingBtn = document.getElementById('sendManualPingBtn');
+
+    // Away Mode & Dark Mode Elements
+    const awayModeBanner = document.getElementById('awayModeBanner');
+    const awayModeBannerSubtext = document.getElementById('awayModeBannerSubtext');
+    const awayModeToggle = document.getElementById('awayModeToggle');
+    const manualFeedSection = document.getElementById('manualFeedSection');
+    const snackSubtext = document.getElementById('snackSubtext');
+    const snackCatNameTag = document.getElementById('snackCatNameTag');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    // Settings Modal DOM
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const settingsModalHeading = document.getElementById('settingsModalHeading');
+    const settingsMealsSelect = document.getElementById('settingsMealsSelect');
+    const settingsMealsLabel = document.getElementById('settingsMealsLabel');
+    const soundEffectSelect = document.getElementById('soundEffectSelect');
+    const testSoundBtn = document.getElementById('testSoundBtn');
+    const togglePushNotifBtn = document.getElementById('togglePushNotifBtn');
+    const motorDurationRange = document.getElementById('motorDurationRange');
+    const motorDurationLabel = document.getElementById('motorDurationLabel');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+    // Vet & Care Reminders DOM Elements
+    const toggleVetSectionBtn = document.getElementById('toggleVetSectionBtn');
+    const vetContentContainer = document.getElementById('vetContentContainer');
+    const vetToggleIcon = document.getElementById('vetToggleIcon');
+    const dewormingDateInput = document.getElementById('dewormingDateInput');
+    const vaccineDateInput = document.getElementById('vaccineDateInput');
+    const dewormingBadge = document.getElementById('dewormingBadge');
+    const vaccineBadge = document.getElementById('vaccineBadge');
+    const saveVetDatesBtn = document.getElementById('saveVetDatesBtn');
+    const latestWeightDisplay = document.getElementById('latestWeightDisplay');
+    const weightInput = document.getElementById('weightInput');
+    const addWeightBtn = document.getElementById('addWeightBtn');
+    const weightLogList = document.getElementById('weightLogList');
 
     // Dashboard DOM Elements
+    const dynamicSlotsContainer = document.getElementById('dynamicSlotsContainer');
+    const scheduleSlotsHeading = document.getElementById('scheduleSlotsHeading');
     const manualBtn = document.getElementById('manualFeedBtn');
     const portionPills = document.querySelectorAll('.portion-pill');
     const skipRoutineBtn = document.getElementById('skipRoutineBtn');
@@ -620,71 +835,262 @@
     let isInitialLoad = true;
     let currentSchedules = null;
     let tempAvatarBase64 = null;
-    let signupAvatarBase64 = null;
+    let onboardingAvatarBase64 = null;
     let activityLogData = [];
     let selectedSnackPortion = "25g";
     let isSkipNextActive = false;
+    let isAwayModeActive = false;
+    let isAddingNewPetMode = false;
+    
     let currentUserUid = null;
+    let currentPetId = null;
+    let petsDataMap = {};
+    let currentTargetMeals = 3;
+    let lastPingTimestamp = Date.now();
 
     const defaultAvatarUrl = "https://cdn-icons-png.flaticon.com/512/1077/1077063.png";
 
-    // ── 1. AUTH STATE PERSISTENCE & CLOUD PROFILE SYNC ────────────
+    const slotDefinitions = {
+      2: [
+        { key: 'slot_1', name: 'Breakfast Routine', defaultTime: '07:30', defaultPortion: '35g' },
+        { key: 'slot_2', name: 'Dinner Routine', defaultTime: '18:30', defaultPortion: '40g' }
+      ],
+      3: [
+        { key: 'slot_1', name: 'Breakfast Routine', defaultTime: '07:30', defaultPortion: '25g' },
+        { key: 'slot_2', name: 'Lunch Routine', defaultTime: '12:30', defaultPortion: '25g' },
+        { key: 'slot_3', name: 'Dinner Routine', defaultTime: '18:30', defaultPortion: '25g' }
+      ],
+      4: [
+        { key: 'slot_1', name: 'Breakfast Routine', defaultTime: '07:00', defaultPortion: '20g' },
+        { key: 'slot_2', name: 'Lunch Routine', defaultTime: '11:30', defaultPortion: '20g' },
+        { key: 'slot_3', name: 'Afternoon Snack', defaultTime: '15:30', defaultPortion: '15g' },
+        { key: 'slot_4', name: 'Dinner Routine', defaultTime: '19:00', defaultPortion: '20g' }
+      ]
+    };
+
+    // ── 1. AUTH STATE & MULTI-PET LISTENER ────────────────────────
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUserUid = user.uid;
         userEmailTag.textContent = user.email;
         authContainer.classList.add('hidden');
-        appContainer.classList.remove('hidden');
 
-        // I-load ang user-specific profile galing Firebase Realtime Database
-        loadCloudCatProfile(user.uid);
-        loadSettingsPreferences();
-        checkMidnightReset();
+        db.ref(`/users/${user.uid}/pets`).on('value', (snap) => {
+          const pets = snap.val();
 
-        setTimeout(() => {
-          splashScreen.classList.add('splash-hidden');
-        }, 1200);
+          if (!pets) {
+            splashScreen.classList.add('splash-hidden');
+            onboardingModal.classList.remove('hidden');
+          } else {
+            petsDataMap = pets;
+            if (!currentPetId || !pets[currentPetId]) {
+              currentPetId = Object.keys(pets)[0];
+            }
+
+            renderPetTabs();
+            loadSelectedPet(currentPetId);
+
+            appContainer.classList.remove('hidden');
+            loadGlobalPreferences();
+            checkMidnightReset();
+
+            setTimeout(() => {
+              splashScreen.classList.add('splash-hidden');
+            }, 1200);
+          }
+        });
+
       } else {
         currentUserUid = null;
+        currentPetId = null;
         splashScreen.classList.add('splash-hidden');
         appContainer.classList.add('hidden');
+        onboardingModal.classList.add('hidden');
         authContainer.classList.remove('hidden');
       }
     });
 
-    // Preview photo on Sign up form
-    signupPhotoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          signupAvatarBase64 = event.target.result;
-          signupAvatarPreview.src = signupAvatarBase64;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    // ── 2. RENDER PET TABS CAROUSEL ───────────────────────────────
+    function renderPetTabs() {
+      petTabsContainer.innerHTML = '';
 
-    // Toggle Mode (Log In vs Sign Up Setup)
+      Object.entries(petsDataMap).forEach(([id, pet]) => {
+        const isActive = id === currentPetId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `shrink-0 flex items-center space-x-2 px-3.5 py-2 rounded-2xl text-xs font-bold transition cursor-pointer border ${
+          isActive 
+            ? 'bg-[#E07A5F] text-white border-[#E07A5F] shadow-sm' 
+            : 'bg-white dark:bg-[#292524] text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800/80'
+        }`;
+        btn.innerHTML = `
+          <img src="${pet.avatar || defaultAvatarUrl}" class="w-5 h-5 rounded-full object-cover" />
+          <span>${pet.name}</span>
+          <span class="text-[9px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-stone-100 dark:bg-stone-800 text-stone-400'}">${pet.feeder_device_id || 'feeder_01'}</span>
+        `;
+        btn.onclick = () => {
+          currentPetId = id;
+          renderPetTabs();
+          loadSelectedPet(id);
+          addLog(`Switched profile to ${pet.name}`);
+          playActiveSound();
+        };
+        petTabsContainer.appendChild(btn);
+      });
+    }
+
+    function calculateBirthdayCountdown(dateStr, petName) {
+      if (!dateStr) {
+        birthdayBanner.classList.add('hidden');
+        return;
+      }
+
+      const today = new Date();
+      const birth = new Date(dateStr);
+      let nextAnniv = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+
+      if (today.getTime() > nextAnniv.getTime() && today.getDate() !== birth.getDate()) {
+        nextAnniv.setFullYear(today.getFullYear() + 1);
+      }
+
+      today.setHours(0,0,0,0);
+      nextAnniv.setHours(0,0,0,0);
+
+      const diffDays = Math.ceil((nextAnniv - today) / (1000 * 60 * 60 * 24));
+
+      birthdayBanner.classList.remove('hidden');
+      if (diffDays === 0) {
+        birthdayCountdownText.textContent = `🎉 Happy Birthday / Adoption Day, ${petName}!`;
+      } else if (diffDays === 1) {
+        birthdayCountdownText.textContent = `🎂 ${petName}'s special milestone is Tomorrow!`;
+      } else {
+        birthdayCountdownText.textContent = `🎂 ${petName}'s milestone is in ${diffDays} days (${birth.toLocaleDateString([], {month: 'short', day: 'numeric'})})`;
+      }
+    }
+
+    // ── 3. LOAD PER-PET & PER-FEEDER ISOLATED DATA ────────────────
+    function loadSelectedPet(petId) {
+      const pet = petsDataMap[petId];
+      if (!pet) return;
+
+      const deviceId = pet.feeder_device_id || 'feeder_01';
+      assignedDeviceLabel.textContent = deviceId;
+      snackCatNameTag.textContent = pet.name;
+      settingsModalHeading.textContent = `Settings (${pet.name} • ${deviceId})`;
+
+      renderProfileUI(pet);
+      calculateBirthdayCountdown(pet.birthday, pet.name);
+      loadVetCareData(currentUserUid, petId);
+
+      // Listen to specific Hardware Feeder paths
+      db.ref(`/feeders/${deviceId}`).off();
+      db.ref(`/feeders/${deviceId}`).on('value', (snap) => {
+        const config = snap.val() || {};
+        
+        // 1. Load Heartbeat
+        if (config.last_ping) {
+          lastPingTimestamp = config.last_ping;
+          updateHeartbeatUI();
+        }
+
+        // 2. Load Feeder Power Source
+        const power = config.power_source || 'ac';
+        renderPowerSourceUI(power);
+
+        // 3. Load Feeder Away Mode
+        const isAway = config.away_mode === true;
+        applyAwayMode(isAway, pet.name);
+        awayModeToggle.checked = isAway;
+
+        // 4. Load Feeder Motor & Sound Configurations
+        const motorSpeed = config.dispense_duration || 2.0;
+        motorDurationRange.value = motorSpeed;
+        motorDurationLabel.textContent = `${motorSpeed}s`;
+        soundEffectSelect.value = config.sound_effect || 'chime';
+
+        // 5. Load Last fed and Today count
+        lastFedDisplay.textContent = config.last_fed || 'Never';
+        feedCountDisplay.textContent = `${config.today_count || 0} bowls served`;
+      });
+
+      // Load specific schedule for this feeder
+      db.ref(`/feeders/${deviceId}/schedules`).once('value', (snap) => {
+        currentSchedules = snap.val() || {};
+        renderDynamicScheduleSlots(pet.targetMeals || 3, currentSchedules);
+      });
+
+      // Listen to cloud activity logs for this specific pet only
+      db.ref(`/users/${currentUserUid}/pets/${petId}/activity_logs`).off();
+      db.ref(`/users/${currentUserUid}/pets/${petId}/activity_logs`).on('value', (snap) => {
+        const logs = snap.val() || {};
+        logList.innerHTML = '';
+        activityLogData = [];
+
+        const entries = Object.entries(logs).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+        if (entries.length > 0) {
+          entries.forEach(([key, row]) => {
+            activityLogData.push(row);
+            const li = document.createElement('li');
+            li.className = 'p-2.5 bg-[#FAF7F2] dark:bg-stone-800 rounded-xl flex justify-between items-center text-xs';
+            li.innerHTML = `
+              <span class="font-semibold text-stone-700 dark:text-stone-200">${row.action}</span>
+              <span class="text-[10px] text-stone-400 font-bold">${row.time}</span>
+            `;
+            logList.appendChild(li);
+          });
+        } else {
+          logList.innerHTML = '<li class="text-[11px] text-stone-400 italic text-center py-2">No activity history recorded for this cat</li>';
+        }
+      });
+    }
+
+    function renderPowerSourceUI(source) {
+      if (source === 'battery' || source === 'powerbank') {
+        settingsPowerSourceLabel.textContent = 'Powerbank Backup';
+        settingsPowerSelect.value = 'battery';
+      } else {
+        settingsPowerSourceLabel.textContent = 'Wall Outlet (AC)';
+        settingsPowerSelect.value = 'ac';
+      }
+    }
+
+    function applyAwayMode(enabled, petName) {
+      isAwayModeActive = enabled;
+
+      if (enabled) {
+        awayModeBanner.classList.remove('hidden');
+        awayModeBannerSubtext.textContent = `Manual snack taps locked for ${petName || 'this feeder'}`;
+        manualBtn.disabled = true;
+        manualBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        snackSubtext.textContent = `Locked: Vacation Mode active for ${petName || 'this feeder'}`;
+        snackSubtext.className = 'text-[11px] text-amber-600 dark:text-amber-400 font-bold';
+      } else {
+        awayModeBanner.classList.add('hidden');
+        manualBtn.disabled = false;
+        manualBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        snackSubtext.textContent = 'Triggers linked feeder motor';
+        snackSubtext.className = 'text-[11px] text-stone-500 dark:text-stone-400 font-medium';
+      }
+    }
+
+    // Toggle Login vs Sign Up
     toggleAuthModeBtn.addEventListener('click', () => {
       isSigningUp = !isSigningUp;
       authError.classList.add('hidden');
       if (isSigningUp) {
         authTitle.textContent = 'Create Feeder Account';
-        authSubtitle.textContent = 'Set up your cat profile and daily targets';
-        authSubmitBtn.textContent = 'Complete Sign Up & Save Profile';
+        authSubtitle.textContent = 'Sign up with your email to start';
+        authSubmitBtn.textContent = 'Sign Up';
         toggleAuthModeBtn.textContent = 'Already have an account? Log In';
-        signupExtraFields.classList.remove('hidden');
       } else {
         authTitle.textContent = 'Welcome to MeowMunch';
         authSubtitle.textContent = 'Log in to manage your smart pet feeder';
         authSubmitBtn.textContent = 'Log In';
-        toggleAuthModeBtn.textContent = "Don't have an account? Sign Up & Setup Cat Profile";
-        signupExtraFields.classList.add('hidden');
+        toggleAuthModeBtn.textContent = "Don't have an account? Sign Up";
       }
     });
 
-    // Auth Submission Handler
     authForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
@@ -695,34 +1101,76 @@
 
       if (isSigningUp) {
         auth.createUserWithEmailAndPassword(email, password)
-          .then((cred) => {
-            const userProfile = {
-              avatar: signupAvatarBase64 || defaultAvatarUrl,
-              name: signupCatName.value.trim() || "My Cat",
-              targetMeals: signupTargetMeals.value || "3",
-              targetGrams: signupTargetGrams.value.trim() || "75g"
-            };
-
-            // I-save diretso sa Cloud Database ng account
-            return db.ref(`/users/${cred.user.uid}/profile`).set(userProfile).then(() => {
-              renderProfileUI(userProfile);
-            });
-          })
           .catch((err) => {
-            authError.textContent = err.message;
+            let friendlyMsg = err.message;
+            if (err.code === 'auth/email-already-in-use') {
+              friendlyMsg = 'An account already exists with this email address. Please log in instead.';
+            } else if (err.code === 'auth/weak-password') {
+              friendlyMsg = 'Password is too weak. Please use at least 6 characters.';
+            } else if (err.code === 'auth/invalid-email') {
+              friendlyMsg = 'Please enter a valid email address format.';
+            }
+
+            authError.textContent = friendlyMsg;
             authError.classList.remove('hidden');
             authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = 'Complete Sign Up & Save Profile';
+            authSubmitBtn.textContent = 'Sign Up';
           });
       } else {
         auth.signInWithEmailAndPassword(email, password)
           .catch((err) => {
-            authError.textContent = err.message;
+            let friendlyMsg = err.message;
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+              friendlyMsg = 'Incorrect email or password. Please try again.';
+            }
+
+            authError.textContent = friendlyMsg;
             authError.classList.remove('hidden');
             authSubmitBtn.disabled = false;
             authSubmitBtn.textContent = 'Log In';
           });
       }
+    });
+
+    onboardingPhotoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          onboardingAvatarBase64 = event.target.result;
+          onboardingAvatarPreview.src = onboardingAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    onboardingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentUserUid) return;
+
+      onboardingSubmitBtn.disabled = true;
+      onboardingSubmitBtn.textContent = 'Setting up feeder...';
+
+      const initialProfile = {
+        avatar: onboardingAvatarBase64 || defaultAvatarUrl,
+        name: onboardingCatName.value.trim() || "My Cat",
+        feeder_device_id: onboardingDeviceSelect.value || "feeder_01",
+        birthday: onboardingBirthdayInput.value || "",
+        targetMeals: parseInt(onboardingTargetMeals.value) || 3,
+        targetGrams: onboardingTargetGrams.value.trim() || "75g"
+      };
+
+      const newPetRef = db.ref(`/users/${currentUserUid}/pets`).push();
+      currentPetId = newPetRef.key;
+
+      newPetRef.set(initialProfile).then(() => {
+        onboardingModal.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        loadGlobalPreferences();
+        checkMidnightReset();
+        addLog(`Welcome! Profile created for ${initialProfile.name}`);
+        playActiveSound();
+      });
     });
 
     logoutBtn.addEventListener('click', () => {
@@ -734,34 +1182,34 @@
       }
     });
 
-    // ── 2. CLOUD CAT PROFILE HANDLERS ─────────────────────────────
-    function renderProfileUI(profile) {
-      const avatar = profile.avatar || defaultAvatarUrl;
-      const name = profile.name || "My Cat";
-      const targetMeals = profile.targetMeals || "3";
-      const targetGrams = profile.targetGrams || "75g";
-
-      profileAvatarDisplay.src = avatar;
-      profileNameDisplay.textContent = name;
-      profileGoalTag.textContent = `Goal: ${targetMeals} Meals`;
-      profileGramsDisplay.textContent = `${targetGrams} daily kibble target`;
-
-      modalAvatarPreview.src = avatar;
-      modalCatName.value = name;
-      modalTargetMeals.value = targetMeals;
-      modalTargetGrams.value = targetGrams;
-    }
-
-    function loadCloudCatProfile(uid) {
-      db.ref(`/users/${uid}/profile`).on('value', (snap) => {
-        const profile = snap.val();
-        if (profile) {
-          renderProfileUI(profile);
-        }
-      });
-    }
+    // ── 4. ADD NEW CAT & EDIT PET MODAL LOGIC ─────────────────────
+    addNewPetBtn.addEventListener('click', () => {
+      isAddingNewPetMode = true;
+      modalTitleText.textContent = 'Add New Cat Profile';
+      modalSubmitBtn.textContent = 'Create Cat Profile';
+      modalAvatarPreview.src = defaultAvatarUrl;
+      tempAvatarBase64 = null;
+      modalCatName.value = '';
+      modalBirthdayInput.value = '';
+      modalDeviceSelect.value = 'feeder_02';
+      modalTargetMeals.value = '3';
+      modalTargetGrams.value = '75g';
+      profileModal.classList.remove('hidden');
+    });
 
     openEditModalBtn.addEventListener('click', () => {
+      if (!currentPetId || !petsDataMap[currentPetId]) return;
+      isAddingNewPetMode = false;
+      const pet = petsDataMap[currentPetId];
+      modalTitleText.textContent = `Edit ${pet.name}'s Profile`;
+      modalSubmitBtn.textContent = 'Save Changes';
+      modalAvatarPreview.src = pet.avatar || defaultAvatarUrl;
+      tempAvatarBase64 = pet.avatar;
+      modalCatName.value = pet.name || '';
+      modalBirthdayInput.value = pet.birthday || '';
+      modalDeviceSelect.value = pet.feeder_device_id || 'feeder_01';
+      modalTargetMeals.value = pet.targetMeals || 3;
+      modalTargetGrams.value = pet.targetGrams || '75g';
       profileModal.classList.remove('hidden');
     });
 
@@ -785,71 +1233,260 @@
       e.preventDefault();
       if (!currentUserUid) return;
 
-      const currentAvatar = tempAvatarBase64 || profileAvatarDisplay.src;
-      const updatedProfile = {
-        avatar: currentAvatar,
+      const updatedPayload = {
+        avatar: tempAvatarBase64 || (currentPetId && petsDataMap[currentPetId] ? petsDataMap[currentPetId].avatar : defaultAvatarUrl),
         name: modalCatName.value.trim() || "My Cat",
-        targetMeals: modalTargetMeals.value,
+        feeder_device_id: modalDeviceSelect.value,
+        birthday: modalBirthdayInput.value || "",
+        targetMeals: parseInt(modalTargetMeals.value) || 3,
         targetGrams: modalTargetGrams.value.trim() || "75g"
       };
 
-      db.ref(`/users/${currentUserUid}/profile`).set(updatedProfile).then(() => {
-        renderProfileUI(updatedProfile);
-        profileModal.classList.add('hidden');
-        addLog(`Updated profile details for ${updatedProfile.name}`);
+      if (isAddingNewPetMode) {
+        const newRef = db.ref(`/users/${currentUserUid}/pets`).push();
+        currentPetId = newRef.key;
+        newRef.set(updatedPayload).then(() => {
+          profileModal.classList.add('hidden');
+          addLog(`Added new cat profile: ${updatedPayload.name}`);
+          playActiveSound();
+        });
+      } else {
+        db.ref(`/users/${currentUserUid}/pets/${currentPetId}`).update(updatedPayload).then(() => {
+          profileModal.classList.add('hidden');
+          addLog(`Updated profile details for ${updatedPayload.name}`);
+          playActiveSound();
+        });
+      }
+    });
+
+    // ── 5. VET & CARE REMINDERS & WEIGHT LOGIC ────────────────────
+    toggleVetSectionBtn.addEventListener('click', () => {
+      const isHidden = vetContentContainer.classList.contains('hidden');
+      if (isHidden) {
+        vetContentContainer.classList.remove('hidden');
+        vetToggleIcon.textContent = '▲';
+      } else {
+        vetContentContainer.classList.add('hidden');
+        vetToggleIcon.textContent = '▼';
+      }
+    });
+
+    function computeDaysRemaining(targetDateStr) {
+      if (!targetDateStr) return 'Not set';
+      const target = new Date(targetDateStr);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      target.setHours(0,0,0,0);
+
+      const diffDays = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return 'Overdue ⚠️';
+      if (diffDays === 0) return 'Due Today!';
+      if (diffDays === 1) return 'Due Tomorrow';
+      return `in ${diffDays} days`;
+    }
+
+    function loadVetCareData(uid, petId) {
+      db.ref(`/users/${uid}/pets/${petId}/vet_care`).on('value', (snap) => {
+        const data = snap.val() || {};
+        dewormingDateInput.value = data.deworming || '';
+        vaccineDateInput.value = data.vaccine || '';
+
+        dewormingBadge.textContent = computeDaysRemaining(data.deworming);
+        dewormingBadge.className = data.deworming && new Date(data.deworming) < new Date() ? 'text-[10px] font-bold text-rose-500' : 'text-[10px] font-bold text-stone-500 dark:text-stone-400';
+
+        vaccineBadge.textContent = computeDaysRemaining(data.vaccine);
+        vaccineBadge.className = data.vaccine && new Date(data.vaccine) < new Date() ? 'text-[10px] font-bold text-rose-500' : 'text-[10px] font-bold text-stone-500 dark:text-stone-400';
+      });
+
+      db.ref(`/users/${uid}/pets/${petId}/weight_logs`).on('value', (snap) => {
+        const logs = snap.val() || {};
+        weightLogList.innerHTML = '';
+        const entries = Object.entries(logs).reverse();
+
+        if (entries.length > 0) {
+          latestWeightDisplay.textContent = `${entries[0][1].weight} kg`;
+          entries.forEach(([key, item]) => {
+            const li = document.createElement('li');
+            li.className = 'p-2 bg-[#FAF7F2] dark:bg-stone-800 rounded-xl flex justify-between items-center text-[11px]';
+            li.innerHTML = `
+              <span class="font-bold text-stone-700 dark:text-stone-200">${item.weight} kg</span>
+              <span class="text-[10px] text-stone-400 font-semibold">${item.date}</span>
+            `;
+            weightLogList.appendChild(li);
+          });
+        } else {
+          latestWeightDisplay.textContent = '-- kg';
+          weightLogList.innerHTML = '<li class="text-[11px] text-stone-400 italic text-center py-1">No weight logs recorded yet</li>';
+        }
+      });
+    }
+
+    saveVetDatesBtn.addEventListener('click', () => {
+      if (!currentUserUid || !currentPetId) return;
+      const dewormingVal = dewormingDateInput.value;
+      const vaccineVal = vaccineDateInput.value;
+
+      db.ref(`/users/${currentUserUid}/pets/${currentPetId}/vet_care`).set({
+        deworming: dewormingVal,
+        vaccine: vaccineVal
+      }).then(() => {
+        addLog('Care reminder dates updated');
         playActiveSound();
       });
     });
 
-    // ── 3. PORTION SELECTION PILLS ────────────────────────────────
-    portionPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        portionPills.forEach(p => {
-          p.className = 'portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] bg-white text-stone-600 transition cursor-pointer';
-        });
-        pill.className = 'portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition cursor-pointer';
-        selectedSnackPortion = pill.getAttribute('data-portion');
+    addWeightBtn.addEventListener('click', () => {
+      if (!currentUserUid || !currentPetId) return;
+      const val = parseFloat(weightInput.value);
+      if (!val || val <= 0) {
+        alert('Please enter a valid weight in kg (e.g. 4.2)');
+        return;
+      }
+
+      const todayStr = new Date().toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+      db.ref(`/users/${currentUserUid}/pets/${currentPetId}/weight_logs`).push({
+        weight: val.toFixed(2),
+        date: todayStr,
+        timestamp: Date.now()
+      }).then(() => {
+        weightInput.value = '';
+        addLog(`Logged weight: ${val.toFixed(2)} kg`);
+        playActiveSound();
       });
     });
 
-    // ── 4. SKIP NEXT ROUTINE BUTTON LOGIC ─────────────────────────
-    skipRoutineBtn.addEventListener('click', () => {
-      isSkipNextActive = !isSkipNextActive;
-      if (isSkipNextActive) {
-        skipRoutineBtn.textContent = 'Skipping Next ✓';
-        skipRoutineBtn.className = 'px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 font-bold text-[10px] rounded-xl transition cursor-pointer';
-        addLog('Upcoming scheduled routine will be skipped');
+    // ── 6. LIVE HEARTBEAT & POWER SOURCE MONITOR ──────────────────
+    function updateHeartbeatUI() {
+      const now = Date.now();
+      const diffSeconds = Math.max(0, Math.floor((now - lastPingTimestamp) / 1000));
+
+      if (diffSeconds <= 120) {
+        heartbeatContainer.className = 'flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 transition-all';
+        heartbeatDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        
+        if (diffSeconds < 5) {
+          heartbeatText.textContent = 'Synced just now';
+        } else if (diffSeconds < 60) {
+          heartbeatText.textContent = `Synced ${diffSeconds}s ago`;
+        } else {
+          const mins = Math.floor(diffSeconds / 60);
+          heartbeatText.textContent = `Synced ${mins}m ago`;
+        }
       } else {
-        skipRoutineBtn.textContent = 'Skip Meal';
-        skipRoutineBtn.className = 'px-2.5 py-1 bg-white hover:bg-stone-100 text-[#E07A5F] border border-stone-200 font-bold text-[10px] rounded-xl transition cursor-pointer shadow-2xs';
-        addLog('Skip routine cancelled');
-      }
-      updateNextMealCountdown();
-    });
-
-    // ── 5. SETTINGS PREFERENCES & AUDIO SYNTHESIZERS ──────────────
-    function loadSettingsPreferences() {
-      const sound = localStorage.getItem('meowMunch_sound') || 'chime';
-      const duration = localStorage.getItem('meowMunch_motorDuration') || '2.0';
-
-      soundEffectSelect.value = sound;
-      motorDurationRange.value = duration;
-      motorDurationLabel.textContent = `${duration}s`;
-
-      if ('Notification' in window && Notification.permission === 'granted') {
-        togglePushNotifBtn.textContent = 'Active ✓';
-        togglePushNotifBtn.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px] rounded-lg';
+        heartbeatContainer.className = 'flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 transition-all';
+        heartbeatDot.className = 'w-2 h-2 rounded-full bg-rose-400';
+        heartbeatText.textContent = 'Offline (Check Wi-Fi)';
       }
     }
 
+    setInterval(updateHeartbeatUI, 5000);
+
+    sendManualPingBtn.addEventListener('click', () => {
+      const currentNow = Date.now();
+      const pet = petsDataMap[currentPetId];
+      const deviceId = pet ? pet.feeder_device_id || 'feeder_01' : 'feeder_01';
+
+      db.ref(`/feeders/${deviceId}`).update({
+        last_ping: currentNow
+      }).then(() => {
+        lastPingTimestamp = currentNow;
+        updateHeartbeatUI();
+        addLog(`Hardware ping synced to ${deviceId}`);
+        playActiveSound();
+      });
+    });
+
+    // ── 7. DYNAMIC MEAL SLOTS RENDERER ────────────────────────────
+    function renderDynamicScheduleSlots(numMeals, savedData = {}) {
+      currentTargetMeals = parseInt(numMeals) || 3;
+      const slots = slotDefinitions[currentTargetMeals] || slotDefinitions[3];
+
+      scheduleSlotsHeading.textContent = `${currentTargetMeals} Meal Slots Configured`;
+      dynamicSlotsContainer.innerHTML = '';
+
+      slots.forEach((s) => {
+        const slotData = savedData[s.key] || {};
+        const timeVal = slotData.time || s.defaultTime;
+        const portionVal = slotData.portion || s.defaultPortion;
+        const isEnabled = slotData.enabled !== undefined ? slotData.enabled : true;
+
+        const slotHtml = `
+          <div class="p-3.5 bg-[#FAF7F2] dark:bg-stone-800 border border-stone-200/60 dark:border-stone-700 rounded-2xl space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-stone-700 dark:text-stone-200">${s.name}</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="${s.key}Active" ${isEnabled ? 'checked' : ''} class="sr-only peer" />
+                <div class="w-9 h-5 bg-stone-200 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#81B29A]"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <input 
+                type="time" 
+                id="${s.key}Time" 
+                value="${timeVal}" 
+                class="w-full bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-100 font-bold px-3 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]"
+              />
+              <select id="${s.key}Portion" class="w-full bg-white dark:bg-stone-700 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-100 font-bold px-2 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-[#81B29A]">
+                <option value="15g" ${portionVal === '15g' ? 'selected' : ''}>15 grams</option>
+                <option value="20g" ${portionVal === '20g' ? 'selected' : ''}>20 grams</option>
+                <option value="25g" ${portionVal === '25g' ? 'selected' : ''}>25 grams</option>
+                <option value="35g" ${portionVal === '35g' ? 'selected' : ''}>35 grams</option>
+                <option value="40g" ${portionVal === '40g' ? 'selected' : ''}>40 grams</option>
+              </select>
+            </div>
+          </div>
+        `;
+        dynamicSlotsContainer.insertAdjacentHTML('beforeend', slotHtml);
+      });
+
+      updateNextMealCountdown();
+    }
+
+    function renderProfileUI(profile) {
+      const avatar = profile.avatar || defaultAvatarUrl;
+      const name = profile.name || "My Cat";
+      const targetMeals = parseInt(profile.targetMeals) || 3;
+      const targetGrams = profile.targetGrams || "75g";
+
+      profileAvatarDisplay.src = avatar;
+      profileNameDisplay.textContent = name;
+      profileGoalTag.textContent = `Goal: ${targetMeals} Meals`;
+      profileGramsDisplay.textContent = `${targetGrams} daily kibble target`;
+
+      settingsMealsSelect.value = targetMeals;
+      settingsMealsLabel.textContent = `${targetMeals} Meals`;
+    }
+
+    // ── 8. SETTINGS, THEME & PREFERENCES ─────────────────────────
+    function applyDarkMode(enabled) {
+      if (enabled) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('meowMunch_theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('meowMunch_theme', 'light');
+      }
+    }
+
+    function loadGlobalPreferences() {
+      const theme = localStorage.getItem('meowMunch_theme') || 'light';
+      darkModeToggle.checked = theme === 'dark';
+      applyDarkMode(theme === 'dark');
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        togglePushNotifBtn.textContent = 'Active ✓';
+        togglePushNotifBtn.className = 'px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold text-[10px] rounded-lg';
+      }
+    }
+
+    darkModeToggle.addEventListener('change', (e) => applyDarkMode(e.target.checked));
+
     openSettingsBtn.addEventListener('click', () => {
-      loadSettingsPreferences();
       settingsModal.classList.remove('hidden');
     });
 
-    closeSettingsModalBtn.addEventListener('click', () => {
-      settingsModal.classList.add('hidden');
-    });
+    closeSettingsModalBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
 
     motorDurationRange.addEventListener('input', (e) => {
       motorDurationLabel.textContent = `${e.target.value}s`;
@@ -860,7 +1497,7 @@
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
             togglePushNotifBtn.textContent = 'Active ✓';
-            togglePushNotifBtn.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px] rounded-lg';
+            togglePushNotifBtn.className = 'px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold text-[10px] rounded-lg';
             playActiveSound();
           }
         });
@@ -868,7 +1505,7 @@
     });
 
     function playActiveSound() {
-      const soundType = localStorage.getItem('meowMunch_sound') || 'chime';
+      const soundType = soundEffectSelect.value || 'chime';
       if (soundType === 'mute') return;
 
       try {
@@ -909,27 +1546,44 @@
           osc.stop(now + 0.45);
         }
       } catch (e) {
-        console.warn('Audio synthesis failed:', e);
+        console.warn('Audio playback failed:', e);
       }
     }
 
     testSoundBtn.addEventListener('click', () => {
-      const selected = soundEffectSelect.value;
-      localStorage.setItem('meowMunch_sound', selected);
       playActiveSound();
     });
 
     saveSettingsBtn.addEventListener('click', () => {
+      if (!currentPetId || !petsDataMap[currentPetId]) return;
+
+      const pet = petsDataMap[currentPetId];
+      const deviceId = pet.feeder_device_id || 'feeder_01';
+
       const selectedSound = soundEffectSelect.value;
-      const duration = motorDurationRange.value;
+      const duration = parseFloat(motorDurationRange.value);
+      const updatedMeals = parseInt(settingsMealsSelect.value);
+      const selectedPower = settingsPowerSelect.value;
+      const isAway = awayModeToggle.checked;
 
-      localStorage.setItem('meowMunch_sound', selectedSound);
-      localStorage.setItem('meowMunch_motorDuration', duration);
+      // 1. Save directly to this Feeder's node
+      db.ref(`/feeders/${deviceId}`).update({
+        dispense_duration: duration,
+        power_source: selectedPower,
+        sound_effect: selectedSound,
+        away_mode: isAway
+      });
 
-      db.ref('/feeder_config').update({ dispense_duration: parseFloat(duration) });
+      // 2. Save target diet meal frequency to pet profile
+      db.ref(`/users/${currentUserUid}/pets/${currentPetId}`).update({ 
+        targetMeals: updatedMeals 
+      });
+
+      renderDynamicScheduleSlots(updatedMeals, currentSchedules || {});
       settingsModal.classList.add('hidden');
-      addLog('Settings preferences updated');
+      addLog(`Settings updated for ${pet.name} (${deviceId})`);
       playActiveSound();
+      alert(`Settings saved specifically for ${pet.name}!`);
     });
 
     exportCsvBtn.addEventListener('click', () => {
@@ -950,13 +1604,42 @@
       document.body.removeChild(link);
     });
 
-    // ── 6. MIDNIGHT AUTO-RESET ────────────────────────────────────
+    // ── 9. PORTION PILLS & SKIP ROUTINE ───────────────────────────
+    portionPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        if (isAwayModeActive) return;
+        portionPills.forEach(p => {
+          p.className = 'portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#FFE2D4] dark:border-stone-700 bg-white dark:bg-[#292524] text-stone-600 dark:text-stone-300 transition cursor-pointer';
+        });
+        pill.className = 'portion-pill py-1.5 text-center text-[11px] font-bold rounded-xl border border-[#E07A5F] bg-[#E07A5F] text-white shadow-2xs transition cursor-pointer';
+        selectedSnackPortion = pill.getAttribute('data-portion');
+      });
+    });
+
+    skipRoutineBtn.addEventListener('click', () => {
+      isSkipNextActive = !isSkipNextActive;
+      if (isSkipNextActive) {
+        skipRoutineBtn.textContent = 'Skipping Next ✓';
+        skipRoutineBtn.className = 'px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 font-bold text-[10px] rounded-xl transition cursor-pointer';
+        addLog('Upcoming scheduled routine will be skipped');
+      } else {
+        skipRoutineBtn.textContent = 'Skip Meal';
+        skipRoutineBtn.className = 'px-2.5 py-1 bg-white dark:bg-[#292524] hover:bg-stone-100 dark:hover:bg-stone-700 text-[#E07A5F] border border-stone-200 dark:border-stone-700 font-bold text-[10px] rounded-xl transition cursor-pointer shadow-2xs';
+        addLog('Skip routine cancelled');
+      }
+      updateNextMealCountdown();
+    });
+
+    // ── 10. MIDNIGHT AUTO-RESET & CLOUD ACTIVITY LOGS ─────────────
     function checkMidnightReset() {
       const todayDate = new Date().toISOString().split('T')[0];
       const lastResetDate = localStorage.getItem('meowMunch_lastResetDate');
 
       if (lastResetDate && lastResetDate !== todayDate) {
-        db.ref('/logs/today_count').set(0);
+        if (currentPetId && petsDataMap[currentPetId]) {
+          const deviceId = petsDataMap[currentPetId].feeder_device_id || 'feeder_01';
+          db.ref(`/feeders/${deviceId}/today_count`).set(0);
+        }
         addLog('Daily meal counter reset for new day (12:00 AM)');
       }
       localStorage.setItem('meowMunch_lastResetDate', todayDate);
@@ -975,33 +1658,50 @@
     }
 
     function addLog(action, time) {
-      const displayTime = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      activityLogData.unshift({ action, time: displayTime });
+      if (!currentUserUid || !currentPetId) return;
 
-      const li = document.createElement('li');
-      li.className = 'p-2.5 bg-[#FAF7F2] rounded-xl flex justify-between items-center';
-      li.innerHTML = `<span class="font-semibold text-stone-700">${action}</span><span class="text-[10px] text-stone-400 font-bold">${displayTime}</span>`;
-      logList.prepend(li);
+      const displayTime = time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      // Save directly to Firebase under this specific pet
+      db.ref(`/users/${currentUserUid}/pets/${currentPetId}/activity_logs`).push({
+        action: action,
+        time: displayTime,
+        timestamp: Date.now()
+      });
     }
 
     clearLogsBtn.addEventListener('click', () => {
-      logList.innerHTML = '';
-      activityLogData = [];
-      addLog('Activity history cleared');
+      if (!currentUserUid || !currentPetId) return;
+
+      const pet = petsDataMap[currentPetId];
+      const petName = pet ? pet.name : 'this cat';
+
+      if (confirm(`Clear all activity history for ${petName}?`)) {
+        db.ref(`/users/${currentUserUid}/pets/${currentPetId}/activity_logs`).remove().then(() => {
+          logList.innerHTML = '<li class="text-[11px] text-stone-400 italic text-center py-2">No activity history recorded for this cat</li>';
+          activityLogData = [];
+        });
+      }
     });
 
-    // ── 7. NEXT MEAL COUNTDOWN TIMER ──────────────────────────────
+    // ── 11. DYNAMIC NEXT MEAL COUNTDOWN TIMER ─────────────────────
     function updateNextMealCountdown() {
-      if (!currentSchedules) return;
-
+      const slotsConfig = slotDefinitions[currentTargetMeals] || slotDefinitions[3];
       const now = new Date();
-      let slots = [
-        { name: 'Breakfast', ...currentSchedules.slot_1 },
-        { name: 'Lunch', ...currentSchedules.slot_2 },
-        { name: 'Dinner', ...currentSchedules.slot_3 }
-      ].filter(s => s && s.enabled && s.time);
+      let activeSlots = [];
 
-      if (slots.length === 0) {
+      slotsConfig.forEach(s => {
+        const timeInput = document.getElementById(`${s.key}Time`);
+        const activeInput = document.getElementById(`${s.key}Active`);
+        if (timeInput && activeInput && activeInput.checked) {
+          activeSlots.push({
+            name: s.name,
+            time: timeInput.value
+          });
+        }
+      });
+
+      if (activeSlots.length === 0) {
         nextMealDisplay.textContent = 'No routines enabled';
         countdownBadge.textContent = 'Off';
         return;
@@ -1010,7 +1710,7 @@
       let upcoming = null;
       let minDiffMs = Infinity;
 
-      slots.forEach(slot => {
+      activeSlots.forEach(slot => {
         const [h, m] = slot.time.split(':').map(Number);
         const mealDate = new Date();
         mealDate.setHours(h, m, 0, 0);
@@ -1020,7 +1720,7 @@
 
         if (diff < minDiffMs) {
           minDiffMs = diff;
-          upcoming = { ...slot, targetTime: slot.time };
+          upcoming = slot;
         }
       });
 
@@ -1030,116 +1730,90 @@
         const mins = totalMinutes % 60;
 
         if (isSkipNextActive) {
-          nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime}) - Skipped`;
+          nextMealDisplay.textContent = `${upcoming.name} (${upcoming.time}) - Skipped`;
           countdownBadge.textContent = 'Skipped ⏸';
-          countdownBadge.className = 'text-[11px] font-bold bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-full shadow-2xs';
+          countdownBadge.className = 'text-[11px] font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 px-2.5 py-1 rounded-full shadow-2xs';
         } else {
-          nextMealDisplay.textContent = `${upcoming.name} (${upcoming.targetTime})`;
+          nextMealDisplay.textContent = `${upcoming.name} (${upcoming.time})`;
           countdownBadge.textContent = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
-          countdownBadge.className = 'text-[11px] font-bold bg-white text-[#3D405B] border border-stone-200 px-2.5 py-1 rounded-full shadow-2xs';
+          countdownBadge.className = 'text-[11px] font-bold bg-white dark:bg-[#292524] text-[#3D405B] dark:text-stone-200 border border-stone-200 dark:border-stone-700 px-2.5 py-1 rounded-full shadow-2xs';
         }
       }
     }
 
     setInterval(updateNextMealCountdown, 30000);
 
-    // ── 8. FIREBASE REALTIME SYNC ─────────────────────────────────
-    db.ref('/logs/last_fed').on('value', (snap) => {
-      const val = snap.val();
-      if (val) {
-        lastFedDisplay.textContent = val;
-        if (!isInitialLoad) {
-          triggerNotification('MeowMunch Alert', `${profileNameDisplay.textContent}'s meal was dispensed at ${val}!`);
-          addLog('Meal dispensed successfully', val);
-        }
-      }
-      isInitialLoad = false;
-    });
-
-    db.ref('/logs/today_count').on('value', (snap) => {
-      const count = snap.val() || 0;
-      feedCountDisplay.textContent = `${count} bowls served`;
-    });
-
-    db.ref('/schedules').on('value', (snap) => {
-      const data = snap.val();
-      if (data) {
-        currentSchedules = data;
-        if (data.slot_1) {
-          document.getElementById('slot1Time').value = data.slot_1.time || "07:30";
-          document.getElementById('slot1Portion').value = data.slot_1.portion || "25g";
-          document.getElementById('slot1Active').checked = data.slot_1.enabled ?? true;
-        }
-        if (data.slot_2) {
-          document.getElementById('slot2Time').value = data.slot_2.time || "12:30";
-          document.getElementById('slot2Portion').value = data.slot_2.portion || "25g";
-          document.getElementById('slot2Active').checked = data.slot_2.enabled ?? true;
-        }
-        if (data.slot_3) {
-          document.getElementById('slot3Time').value = data.slot_3.time || "18:30";
-          document.getElementById('slot3Portion').value = data.slot_3.portion || "25g";
-          document.getElementById('slot3Active').checked = data.slot_3.enabled ?? true;
-        }
-        updateNextMealCountdown();
-      }
-    });
-
-    // ── 9. MANUAL FEED TRIGGER & SCHEDULE SAVE ────────────────────
+    // ── 12. ACTIONS & DISPENSE TRIGGER ────────────────────────────
     manualBtn.addEventListener('click', () => {
+      if (isAwayModeActive || !currentPetId || !petsDataMap[currentPetId]) return;
+
+      const pet = petsDataMap[currentPetId];
+      const deviceId = pet.feeder_device_id || 'feeder_01';
+
       manualBtn.disabled = true;
       manualBtn.textContent = 'Dispensing...';
 
       playActiveSound();
       const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      db.ref('/logs/today_count').transaction((currentCount) => (currentCount || 0) + 1);
-      db.ref('/logs/last_fed').set(currentTimeStr);
+      db.ref(`/feeders/${deviceId}/today_count`).transaction((currentCount) => (currentCount || 0) + 1);
+      db.ref(`/feeders/${deviceId}/last_fed`).set(currentTimeStr);
 
-      db.ref('/feeder_config').update({ 
+      db.ref(`/feeders/${deviceId}`).update({ 
         manual_trigger: true,
         snack_portion: selectedSnackPortion
       }).then(() => {
-        addLog(`Snack dispensed (${selectedSnackPortion}) for ${profileNameDisplay.textContent}`, currentTimeStr);
+        addLog(`Snack (${selectedSnackPortion}) sent to ${pet.name} (${deviceId})`, currentTimeStr);
         setTimeout(() => {
-          manualBtn.disabled = false;
-          manualBtn.textContent = 'Feed Now';
+          if (!isAwayModeActive) {
+            manualBtn.disabled = false;
+            manualBtn.textContent = 'Feed Now';
+          }
         }, 1500);
       });
     });
 
     scheduleForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (!currentUserUid || !currentPetId || !petsDataMap[currentPetId]) return;
+
+      const pet = petsDataMap[currentPetId];
+      const deviceId = pet.feeder_device_id || 'feeder_01';
+
       saveBtn.disabled = true;
       saveBtn.textContent = 'Saving...';
 
-      const payload = {
-        slot_1: {
-          time: document.getElementById('slot1Time').value,
-          portion: document.getElementById('slot1Portion').value,
-          enabled: document.getElementById('slot1Active').checked
-        },
-        slot_2: {
-          time: document.getElementById('slot2Time').value,
-          portion: document.getElementById('slot2Portion').value,
-          enabled: document.getElementById('slot2Active').checked
-        },
-        slot_3: {
-          time: document.getElementById('slot3Time').value,
-          portion: document.getElementById('slot3Portion').value,
-          enabled: document.getElementById('slot3Active').checked
-        }
-      };
+      const slots = slotDefinitions[currentTargetMeals] || slotDefinitions[3];
+      const payload = {};
 
-      db.ref('/schedules').set(payload).then(() => {
+      slots.forEach(s => {
+        const timeEl = document.getElementById(`${s.key}Time`);
+        const portionEl = document.getElementById(`${s.key}Portion`);
+        const activeEl = document.getElementById(`${s.key}Active`);
+
+        if (timeEl && portionEl && activeEl) {
+          payload[s.key] = {
+            time: timeEl.value,
+            portion: portionEl.value,
+            enabled: activeEl.checked
+          };
+        }
+      });
+
+      db.ref(`/feeders/${deviceId}/schedules`).set(payload).then(() => {
         currentSchedules = payload;
         updateNextMealCountdown();
         saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Schedule Settings';
-        addLog('Schedules synced to cloud');
+        saveBtn.textContent = 'Save Schedule to Assigned Feeder';
+        addLog(`Schedules synced to ${deviceId} for ${pet.name}`);
         playActiveSound();
-        alert('Meal schedules successfully updated!');
+        alert(`Meal schedules successfully synced to ${deviceId} (${pet.name})!`);
       });
     });
+
+    if (localStorage.getItem('meowMunch_theme') === 'dark') {
+      applyDarkMode(true);
+    }
   </script>
 </body>
 </html>
